@@ -24,12 +24,15 @@ public class JsonUtil {
     private static Log logger = LogFactory.getLog(JsonUtil.class);
     
     
-    public static final void printResult(Invocation inv, int status, String msg, Map<String, Object> resultMap){
-        if(resultMap == null){
-            resultMap = new HashMap<String, Object>();
+    public static final void printResult(Invocation inv, int status, String msg, Map<String, Object> data){
+        if(data == null){
+            data = new HashMap<String, Object>();
         }
+        Map<String, Object> resultMap = new HashMap<String,Object>();
         resultMap.put("code", status);
         resultMap.put("msg", msg);
+        resultMap.put("data", data);
+
         String respStr = new Gson().toJson(resultMap);
         
         HttpServletResponse response = inv.getResponse();

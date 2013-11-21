@@ -1,4 +1,4 @@
-package com.jinfang.golf.controllers.api;
+package com.jinfang.golf.controllers.v1;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +66,7 @@ public class UserLoginController {
 		Map<String, Object> resultMap = new HashMap<String,Object>();
 		resultMap.put("_jftk", token);
 		resultMap.put("user",user );
-		JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "用户不存在！", resultMap);
+		JsonUtil.printResult(inv, ResponseStatus.OK, "登录成功！", resultMap);
 		return;
 		
 	}
