@@ -1,5 +1,6 @@
 package com.jinfang.golf.controllers.v1;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +12,10 @@ import net.paoding.rose.web.annotation.rest.Post;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.gson.reflect.TypeToken;
+import com.jinfang.golf.api.exception.GolfException;
+import com.jinfang.golf.api.utils.BaseResponseItem;
+import com.jinfang.golf.api.utils.BeanJsonUtils;
 import com.jinfang.golf.api.utils.JsonUtil;
 import com.jinfang.golf.constants.ResponseStatus;
 import com.jinfang.golf.passport.model.Passport;
@@ -37,12 +42,11 @@ public class UserLoginController {
 	 * @throws Exception
 	 */
 	@Post("slogin")
-	public void login(@Param("identity") String identity, @Param("pwd") String pwd) throws Exception {
+	public String login(@Param("identity") String identity, @Param("pwd") String pwd) throws Exception {
 	    
 	    
 	    if(StringUtils.isBlank(identity)){
-	        JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "用户名或密码不正确！", null);
-	        return;
+ 	   	 	return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"用户名或密码不正确！"));
 	    }
 	    
 	    User user = null;
@@ -52,29 +56,40 @@ public class UserLoginController {
 	    }else if(FormatCheckUtil.isMobileNO(identity)){
 	        user = userHome.getByPhone(identity);
 	    }else{
-	        JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "用户名或密码不正确！", null);
-            return;
+ 	   	 	return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"用户名或密码不正确！"));
 	    }
-	    
 	    if(user==null){
-	        JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "用户名或密码不正确！", null);
-            return;
+ 	   	 	return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"用户名或密码不正确！"));
 	    }
 	    
 	    if(StringUtils.isNotBlank(pwd)&&pwd.equals(user.getPassWord())){
 	    	String token = passport.createAppToken(user.getId(), Integer.MAX_VALUE);
-			
-			Map<String, Object> resultMap = new HashMap<String,Object>();
-			resultMap.put("_jftk", token);
-			resultMap.put("user",user );
-			JsonUtil.printResult(inv, ResponseStatus.OK, "登录成功！", resultMap);
-			return;
+			user.setToken(token);
+			BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"登录成功！");
+		    Type type = new TypeToken<BaseResponseItem<User>>() {}.getType();
+		    result.setData(user);
+		    return "@" + BeanJsonUtils.convertToJson(result,type);
 	    }else{
-	    	JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "用户名或密码不正确！", null);
-			return;
+ 	   	 	return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"用户名或密码不正确！"));
 	    }
 		
 		
+		
+	}
+	
+	public static void main(String[] args){
+		BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"登录成功！");
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("test", "test");
+		User user = new User();
+		user.setId(1);
+		user.setUserName("abc");
+		user.setToken("test");
+		map.put("user", user);
+//		result.setData(user);
+		result.setData(user);
+		Type type = new TypeToken<BaseResponseItem<User>>() {}.getType();
+		System.out.println(BeanJsonUtils.convertToJson(result,type));
 		
 	}
 }

@@ -1,5 +1,6 @@
 package com.jinfang.golf.controllers.v1;
 
+import java.lang.reflect.Type;
 import java.util.Date;
 
 import net.paoding.rose.web.Invocation;
@@ -10,6 +11,10 @@ import net.paoding.rose.web.annotation.rest.Post;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.gson.reflect.TypeToken;
+import com.jinfang.golf.api.exception.GolfException;
+import com.jinfang.golf.api.utils.BaseResponseItem;
+import com.jinfang.golf.api.utils.BeanJsonUtils;
 import com.jinfang.golf.api.utils.JsonUtil;
 import com.jinfang.golf.constants.ResponseStatus;
 import com.jinfang.golf.passport.model.Passport;
@@ -108,17 +113,16 @@ public class UserRegController {
      * @throws Exception
      */
     @Post("register")
-    public void register(@Param("phone") String phone,@Param("userName") String userName,@Param("email") String email,@Param("pwd") String passWord) throws Exception {
+    public String register(@Param("phone") String phone,@Param("userName") String userName,@Param("email") String email,@Param("pwd") String passWord) throws Exception {
         
         
         if(StringUtils.isBlank(userName)){
-            JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "请输入用户名！", null);
-            return;
+	   	 	return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"请输入用户名！"));
         }
         
         if(StringUtils.isBlank(phone)&&StringUtils.isBlank(email)){
-            JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "请输入手机或邮箱！", null);
-            return;
+	   	 	return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"请输入手机号！"));
+
         }
         
         User user = null;
@@ -127,8 +131,7 @@ public class UserRegController {
         if(StringUtils.isNotBlank(phone)){
             user = userHome.getByPhone(phone);
             if(user!=null){
-                JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "该手机号已经被注册！", null);
-                return;
+    	   	 	return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"该手机号已经被注册！"));
             }else{
                 user = new User();
                 user.setPhone(phone);
@@ -136,8 +139,10 @@ public class UserRegController {
                 user.setEmail(email);
                 user.setUserName(userName);
                 userHome.save(user);
-                JsonUtil.printResult(inv, ResponseStatus.OK, "注册成功！", null);
-                return;
+                BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK,"注册成功！");
+    	    	Type type = new TypeToken<BaseResponseItem<String>>() {}.getType();
+    	   	 	return "@" + BeanJsonUtils.convertToJson(result,type);
+
             }
         }
         
@@ -145,8 +150,8 @@ public class UserRegController {
         if(StringUtils.isNotBlank(email)){
             user = userHome.getByEmail(email);
             if(user!=null){
-                JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "该邮箱已经被注册！", null);
-                return;
+    	   	 	return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"该邮箱已经被注册！"));
+
             }else{
                 user = new User();
                 user.setPhone(phone);
@@ -154,12 +159,15 @@ public class UserRegController {
                 user.setEmail(email);
                 user.setUserName(userName);
                 userHome.save(user);
-                JsonUtil.printResult(inv, ResponseStatus.OK, "注册成功！", null);
-                return;
+                BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK,"注册成功！");
+    	    	Type type = new TypeToken<BaseResponseItem<String>>() {}.getType();
+    	   	 	return "@" + BeanJsonUtils.convertToJson(result,type);
             }
         }
+        BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK,"注册成功！");
+    	Type type = new TypeToken<BaseResponseItem<String>>() {}.getType();
+   	 	return "@" + BeanJsonUtils.convertToJson(result,type);
       
-        return;
         
     }
 }

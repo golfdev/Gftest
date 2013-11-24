@@ -10,7 +10,7 @@ import org.springframework.web.util.WebUtils;
 import com.jinfang.golf.api.utils.JsonUtil;
 import com.jinfang.golf.constants.ResponseStatus;
 
-public class ApiErrorHandler implements ControllerErrorHandler{
+public class ErrorHandler implements ControllerErrorHandler{
 
 	@Override
 	public Object onError(Invocation inv, Throwable ex) throws Throwable {
