@@ -108,7 +108,7 @@ public class UserRegController {
      * @throws Exception
      */
     @Post("register")
-    public void register(@Param("phone") String phone,@Param("userName") String userName,@Param("email") String email,@Param("passWord") String passWord) throws Exception {
+    public void register(@Param("phone") String phone,@Param("userName") String userName,@Param("email") String email,@Param("pwd") String passWord) throws Exception {
         
         
         if(StringUtils.isBlank(userName)){
@@ -134,6 +134,7 @@ public class UserRegController {
                 user.setPhone(phone);
                 user.setPassWord(passWord);
                 user.setEmail(email);
+                user.setUserName(userName);
                 userHome.save(user);
                 JsonUtil.printResult(inv, ResponseStatus.OK, "注册成功！", null);
                 return;
@@ -151,6 +152,7 @@ public class UserRegController {
                 user.setPhone(phone);
                 user.setPassWord(passWord);
                 user.setEmail(email);
+                user.setUserName(userName);
                 userHome.save(user);
                 JsonUtil.printResult(inv, ResponseStatus.OK, "注册成功！", null);
                 return;

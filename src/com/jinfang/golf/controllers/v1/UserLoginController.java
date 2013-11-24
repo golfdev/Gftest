@@ -41,7 +41,7 @@ public class UserLoginController {
 	    
 	    
 	    if(StringUtils.isBlank(identity)){
-	        JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "用户标识不能为空！", null);
+	        JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "用户名或密码不正确！", null);
 	        return;
 	    }
 	    
@@ -52,22 +52,29 @@ public class UserLoginController {
 	    }else if(FormatCheckUtil.isMobileNO(identity)){
 	        user = userHome.getByPhone(identity);
 	    }else{
-	        JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "用户标识格式非法！", null);
+	        JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "用户名或密码不正确！", null);
             return;
 	    }
 	    
 	    if(user==null){
-	        JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "用户不存在！", null);
+	        JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "用户名或密码不正确！", null);
             return;
 	    }
+	    
+	    if(StringUtils.isNotBlank(pwd)&&pwd.equals(user.getPassWord())){
+	    	String token = passport.createAppToken(user.getId(), Integer.MAX_VALUE);
+			
+			Map<String, Object> resultMap = new HashMap<String,Object>();
+			resultMap.put("_jftk", token);
+			resultMap.put("user",user );
+			JsonUtil.printResult(inv, ResponseStatus.OK, "登录成功！", resultMap);
+			return;
+	    }else{
+	    	JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "用户名或密码不正确！", null);
+			return;
+	    }
 		
-		String token = passport.createAppToken(user.getId(), Integer.MAX_VALUE);
 		
-		Map<String, Object> resultMap = new HashMap<String,Object>();
-		resultMap.put("_jftk", token);
-		resultMap.put("user",user );
-		JsonUtil.printResult(inv, ResponseStatus.OK, "登录成功！", resultMap);
-		return;
 		
 	}
 }

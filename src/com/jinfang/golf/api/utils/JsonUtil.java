@@ -29,7 +29,7 @@ public class JsonUtil {
             data = new HashMap<String, Object>();
         }
         Map<String, Object> resultMap = new HashMap<String,Object>();
-        resultMap.put("code", status);
+        resultMap.put("status", status);
         resultMap.put("msg", msg);
         resultMap.put("data", data);
 
