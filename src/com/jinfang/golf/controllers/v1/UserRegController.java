@@ -50,17 +50,15 @@ public class UserRegController {
 	 * @throws Exception
 	 */
 	@Post("sendVerifyCode")
-	public void sendVerifyCode(@Param("phone") String phone) throws Exception {
+	public String sendVerifyCode(@Param("phone") String phone) throws Exception {
 	    
 	    
 	    if(StringUtils.isBlank(phone)){
-	        JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "请输入手机号码！", null);
-	        return;
+	   	 	return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"请输入手机号码！"));
 	    }
 	    
 	    if(FormatCheckUtil.isMobileNO(phone)){
-            JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "手机号码格式不正确！", null);
-            return;
+	   	 	return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"手机号码格式不正确！"));
         }
 	    
 	    String code = verifyCodeHome.getCode(phone);
@@ -68,50 +66,54 @@ public class UserRegController {
 	    //发送验证码
 	    smsHome.sendVerifyCodeSms(phone, code);
 
-		JsonUtil.printResult(inv, ResponseStatus.OK, "发送验证码成功！", null);
-		return;
+	    BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK,"发送成功！");
+    	Type type = new TypeToken<BaseResponseItem<String>>() {}.getType();
+   	 	return "@" + BeanJsonUtils.convertToJson(result,type);
+      
 		
 	}
 	
 	
 	/**
-     * 发送验证码
-     * @param identity
-     * @param pwd
-     * @throws Exception
-     */
+	 * 校验验证码
+	 * @param phone
+	 * @param code
+	 * @return
+	 * @throws Exception
+	 */
     @Post("checkVerifyCode")
-    public void checkVerifyCode(@Param("phone") String phone,@Param("code") String code) throws Exception {
+    public String checkVerifyCode(@Param("phone") String phone,@Param("code") String code) throws Exception {
         
         
         if(StringUtils.isBlank(phone)){
-            JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "请输入手机号码！", null);
-            return;
+	   	 	return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"请输入手机号码！"));
         }
         
         if(StringUtils.isBlank(phone)){
-            JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "请输入验证码！", null);
-            return;
+	   	 	return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"请输入验证码！"));
         }
         
         VerifyCode verifyCode = verifyCodeHome.get(phone);
         
         if(verifyCode!=null&&verifyCode.getCode().equals(code)&&verifyCode.getExpriedTime().after(new Date())){
-            JsonUtil.printResult(inv, ResponseStatus.OK, "验证成功！", null);
+            BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK,"验证成功！");
+        	Type type = new TypeToken<BaseResponseItem<String>>() {}.getType();
+       	 	return "@" + BeanJsonUtils.convertToJson(result,type);
         }else{
-            JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "验证码失效！", null);
+	   	 	return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"验证码失效！"));
         }
-      
-        return;
         
     }
     
-    /**
-     * 发送验证码
-     * @param identity
-     * @param pwd
-     * @throws Exception
-     */
+   /**
+    * 注册
+    * @param phone
+    * @param userName
+    * @param email
+    * @param passWord
+    * @return
+    * @throws Exception
+    */
     @Post("register")
     public String register(@Param("phone") String phone,@Param("userName") String userName,@Param("email") String email,@Param("pwd") String passWord) throws Exception {
         
