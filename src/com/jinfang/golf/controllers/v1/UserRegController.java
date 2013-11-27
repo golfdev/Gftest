@@ -153,12 +153,14 @@ public class UserRegController {
                     user.setPhone(phone);
                     user.setPassWord(passWord);
                     user.setUserName(userName);
+                    user.setStatus(1);
                     userHome.updateForReg(user);
                 } else {
                     user = new User();
                     user.setPhone(phone);
                     user.setPassWord(passWord);
                     user.setUserName(userName);
+                    user.setStatus(1);
                     Integer userId = userHome.save(user);
                     userHome.saveUserDevice(userId, device);
                 }
