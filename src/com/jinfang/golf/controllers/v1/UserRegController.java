@@ -149,7 +149,7 @@ public class UserRegController {
                                 ResponseStatus.SERVER_ERROR, "该手机号已经被注册！"));
             } else {
                 user = userHome.getByDevice(device);
-                if (user != null) {
+                if (user != null&&user.getStatus()==0) {
                     user.setPhone(phone);
                     user.setPassWord(passWord);
                     user.setUserName(userName);
