@@ -77,6 +77,8 @@ public class UserLoginController {
 		
 	}
 	
+	
+	
 	public static void main(String[] args){
 		BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"登录成功！");
 		Map<String,Object> map = new HashMap<String,Object>();
