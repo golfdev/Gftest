@@ -6,7 +6,7 @@
 	 <!-- 必须项-->
 	<appender name="infoAppender" class="org.apache.log4j.DailyRollingFileAppender">
 	    <param name="Encoding" value="UTF-8" />  
-		<param name="File" value="/www/log/web/golf/stdout.log"/>
+		<param name="File" value="/data/log/web/golf/stdout.log"/>
 		<param name="Append" value="true"/>
 		<param name="DatePattern" value="'.'yyyy-MM-dd'.log'" />  
 		<layout class="org.apache.log4j.PatternLayout">
@@ -21,7 +21,7 @@
 	 <!-- 必须项-->
 	 <appender name="errorAppender" class="org.apache.log4j.DailyRollingFileAppender">
 	    <param name="Encoding" value="UTF-8" />  
-		<param name="File" value="/www/log/web/golf/stderr.log"/>
+		<param name="File" value="/data/log/web/golf/stderr.log"/>
 		<param name="Append" value="true"/>
 		<param name="DatePattern" value="'.'yyyy-MM-dd'.log'" />  
 		<layout class="org.apache.log4j.PatternLayout">
@@ -49,7 +49,7 @@
 	
 	<appender name="Perf4jAppender" class="org.apache.log4j.FileAppender"> 
 	    <param name="Encoding" value="UTF-8" />  
-		<param name="File" value="/www/log/web/golf/perf4j.log"/>
+		<param name="File" value="/data/log/web/golf/perf4j.log"/>
 		<param name="Append" value="true"/>
 		<param name="DatePattern" value="'.'yyyy-MM-dd'.log'" />  
 		<layout class="org.apache.log4j.PatternLayout">
@@ -87,10 +87,10 @@
 	<!-- 必须项-->
 	<root>
 		<priority value="INFO" />
-		<!--
+		
 		<appender-ref ref="infoAppender"/>
         <appender-ref ref="errorAppender"/>
-        -->
+        
         <appender-ref ref="myConsole"/>
 	</root>             
 </log4j:configuration>
