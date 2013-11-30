@@ -17,6 +17,7 @@ import com.jinfang.golf.api.utils.BaseResponseItem;
 import com.jinfang.golf.api.utils.BeanJsonUtils;
 import com.jinfang.golf.constants.GolfConstant;
 import com.jinfang.golf.constants.ResponseStatus;
+import com.jinfang.golf.interceptor.LoginRequired;
 import com.jinfang.golf.passport.model.Passport;
 import com.jinfang.golf.sms.home.SmsHome;
 import com.jinfang.golf.user.home.UserHome;
@@ -27,6 +28,7 @@ import com.jinfang.golf.utils.MathUtil;
 import com.jinfang.golf.utils.UploadUtil;
 import com.jinfang.golf.utils.UserHolder;
 
+@LoginRequired
 @Path("user")
 public class UserInfoController {
 

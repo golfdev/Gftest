@@ -151,7 +151,7 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
     }
     
     public static void main(String[] args){
-    	System.out.println(getSignature("id=4","golf_jf_security"));
+    	System.out.println(getSignature("id=4token=4-1385792952794-2147483647-c8e5d37ca8c30169a4bf4ed1edef7132","golf_jf_security"));
     }
 
 }
