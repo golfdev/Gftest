@@ -148,14 +148,14 @@ public class UserRegController {
                         + BeanJsonUtils.convertToJsonWithException(new GolfException(
                                 ResponseStatus.SERVER_ERROR, "该手机号已经被注册！"));
             } else {
-                user = userHome.getByDevice(device);
-                if (user != null&&user.getStatus()==0) {
-                    user.setPhone(phone);
-                    user.setPassWord(passWord);
-                    user.setUserName(userName);
-                    user.setStatus(1);
-                    userHome.updateForReg(user);
-                } else {
+//                user = userHome.getByDevice(device);
+//                if (user != null&&user.getStatus()==0) {
+//                    user.setPhone(phone);
+//                    user.setPassWord(passWord);
+//                    user.setUserName(userName);
+//                    user.setStatus(1);
+//                    userHome.updateForReg(user);
+//                } else {
                     user = new User();
                     user.setPhone(phone);
                     user.setPassWord(passWord);
@@ -163,7 +163,7 @@ public class UserRegController {
                     user.setStatus(1);
                     Integer userId = userHome.save(user);
                     userHome.saveUserDevice(userId, device);
-                }
+//                }
                 BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK,
                         "注册成功！");
                 Type type = new TypeToken<BaseResponseItem<String>>() {
