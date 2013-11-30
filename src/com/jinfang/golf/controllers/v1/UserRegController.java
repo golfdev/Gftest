@@ -16,6 +16,7 @@ import com.jinfang.golf.api.exception.GolfException;
 import com.jinfang.golf.api.utils.BaseResponseItem;
 import com.jinfang.golf.api.utils.BeanJsonUtils;
 import com.jinfang.golf.api.utils.JsonUtil;
+import com.jinfang.golf.constants.GolfConstant;
 import com.jinfang.golf.constants.ResponseStatus;
 import com.jinfang.golf.passport.model.Passport;
 import com.jinfang.golf.sms.home.SmsHome;
@@ -161,6 +162,7 @@ public class UserRegController {
                     user.setPassWord(passWord);
                     user.setUserName(userName);
                     user.setStatus(1);
+                    user.setHeadUrl(GolfConstant.DEFAULT_HEAD_URL);
                     Integer userId = userHome.save(user);
                     userHome.saveUserDevice(userId, device);
 //                }

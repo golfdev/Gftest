@@ -151,7 +151,7 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
     }
     
     public static void main(String[] args){
-    	System.out.println(getSignature("device=18911082161phone=18911082167pwd=123userName=dfs","golf_jf_security"));
+    	System.out.println(getSignature("id=4","golf_jf_security"));
     }
 
 }
