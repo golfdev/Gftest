@@ -3,6 +3,8 @@
  */
 package com.jinfang.golf.interceptor;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -22,8 +24,6 @@ import org.perf4j.log4j.Log4JStopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.jinfang.golf.api.exception.GolfException;
-import com.jinfang.golf.api.utils.BeanJsonUtils;
 import com.jinfang.golf.api.utils.JsonUtil;
 import com.jinfang.golf.constants.GolfConstant;
 import com.jinfang.golf.constants.ResponseStatus;
@@ -131,7 +131,7 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
      * 生成sign验证串
      * 因iphone的base64复杂，暂时只是MD5
      */
-    private static String getSignature(String parameters, String secret) {
+    private  String getSignature(String parameters, String secret) {
         MessageDigest md = null;
         try {
             md = MessageDigest.getInstance("MD5");
@@ -147,11 +147,21 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
             result.append(Integer.toHexString((b & 0xf0) >>> 4));
             result.append(Integer.toHexString(b & 0x0f));
         }
+        logger.info("sign="+result.toString());
         return result.toString();
     }
     
     public static void main(String[] args){
-    	System.out.println(getSignature("id=4token=4-1385792952794-2147483647-c8e5d37ca8c30169a4bf4ed1edef7132","golf_jf_security"));
+//    	System.out.println(getSignature("identity=18911082167pwd=%E4%BD%A0%E5%A5%BD","golf_jf_security"));
+    	
+    	try {
+			System.out.println(URLEncoder.encode("你好", "utf-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+   
+    	
     }
 
 }

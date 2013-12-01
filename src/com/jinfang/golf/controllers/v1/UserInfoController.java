@@ -8,6 +8,7 @@ import net.paoding.rose.web.annotation.Param;
 import net.paoding.rose.web.annotation.Path;
 import net.paoding.rose.web.annotation.rest.Post;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -74,12 +75,12 @@ public class UserInfoController {
 
     }
     
-    /**
-     * 返回用户基本信息
-     * @param id
-     * @return
-     * @throws Exception
-     */
+   /**
+    * 上传头像
+    * @param userHead
+    * @return
+    * @throws Exception
+    */
     @Post("uploadPhoto")
     public String uploadPhoto(@Param("userHead")MultipartFile userHead) throws Exception {
 
@@ -87,6 +88,43 @@ public class UserInfoController {
         User user = userHolder.getUserInfo();
         user.setHeadUrl(path);
         userHome.updateHeadUrl(user);
+        
+		BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"上传图片成功！");
+	    Type type = new TypeToken<BaseResponseItem<User>>() {}.getType();
+	    result.setData(user);
+	    return "@" + BeanJsonUtils.convertToJson(result,type);
+
+    }
+    
+    
+  /**
+   * 编辑用户信息
+   * @param userHead
+   * @return
+   * @throws Exception
+   */
+    @Post("edit")
+    public String edit(@Param("userName")String userName,@Param("gender")Integer gender,@Param("city")String city,@Param("description")String description) throws Exception {
+
+        User user = userHolder.getUserInfo();
+        
+        if(StringUtils.isNotBlank(userName)){
+        	user.setUserName(userName);
+        }
+        
+        if(gender!=null){
+        	user.setGender(gender);
+        }
+        
+        if(StringUtils.isNotBlank(city)){
+        	user.setCity(city);;
+        }
+    	
+        if(StringUtils.isNotBlank(description)){
+        	user.setDescription(description);
+        }
+        
+        userHome.updateUser(user);
         
 		BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"上传图片成功！");
 	    Type type = new TypeToken<BaseResponseItem<User>>() {}.getType();
@@ -111,11 +149,11 @@ public class UserInfoController {
         String saveDBPath = "/head/" + MathUtil.getImgFileDirectory() + "/";
         try {
             UploadUtil.saveFile(imgFile, saveFilePath, name + suffix);
-            String fileSrcPath = saveFilePath + name + suffix;
-            String tinyPath = saveFilePath + name + "50x50" + suffix;
-            String mainPath = saveFilePath + name + "200x200" + suffix;
-            EasyImage.resize(fileSrcPath, tinyPath, 50, 50);
-            EasyImage.resize(fileSrcPath, mainPath, 200, 200);
+//            String fileSrcPath = saveFilePath + name + suffix;
+//            String tinyPath = saveFilePath + name + "50x50" + suffix;
+//            String mainPath = saveFilePath + name + "200x200" + suffix;
+//            EasyImage.resize(fileSrcPath, tinyPath, 50, 50);
+//            EasyImage.resize(fileSrcPath, mainPath, 200, 200);
             return saveDBPath+name+suffix;
         } catch (IOException e) {
             e.printStackTrace();

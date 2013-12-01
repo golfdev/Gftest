@@ -161,7 +161,7 @@ public class UserRegController {
                     user.setPhone(phone);
                     user.setPassWord(passWord);
                     user.setUserName(userName);
-                    user.setStatus(1);
+                    user.setStatus(0);
                     user.setHeadUrl(GolfConstant.DEFAULT_HEAD_URL);
                     Integer userId = userHome.save(user);
                     userHome.saveUserDevice(userId, device);

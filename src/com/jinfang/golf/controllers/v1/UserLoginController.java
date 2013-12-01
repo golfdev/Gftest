@@ -16,8 +16,8 @@ import com.google.gson.reflect.TypeToken;
 import com.jinfang.golf.api.exception.GolfException;
 import com.jinfang.golf.api.utils.BaseResponseItem;
 import com.jinfang.golf.api.utils.BeanJsonUtils;
-import com.jinfang.golf.api.utils.JsonUtil;
 import com.jinfang.golf.constants.ResponseStatus;
+import com.jinfang.golf.interceptor.BaseInterceptor;
 import com.jinfang.golf.passport.model.Passport;
 import com.jinfang.golf.user.home.UserHome;
 import com.jinfang.golf.user.model.User;
@@ -43,7 +43,6 @@ public class UserLoginController {
 	 */
 	@Post("slogin")
 	public String login(@Param("identity") String identity, @Param("pwd") String pwd) throws Exception {
-	    
 	    
 	    if(StringUtils.isBlank(identity)){
  	   	 	return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"用户名或密码不正确！"));
