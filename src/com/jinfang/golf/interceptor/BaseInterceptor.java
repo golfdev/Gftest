@@ -60,10 +60,10 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
             return false;
         }
         
-//        if(!validateSign(inv)){
-//        	JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "参数非法！", null);
-//            return false;
-//        }
+        if(!validateSign(inv)){
+        	JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "参数非法！", null);
+            return false;
+        }
 
         stopWatchs.set(new Log4JStopWatch());
         String token = inv.getParameter("token");
