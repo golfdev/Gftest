@@ -2,6 +2,7 @@ package com.jinfang.golf.controllers.v1;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.List;
 
 import net.paoding.rose.web.Invocation;
 import net.paoding.rose.web.annotation.Param;
@@ -24,7 +25,6 @@ import com.jinfang.golf.sms.home.SmsHome;
 import com.jinfang.golf.user.home.UserHome;
 import com.jinfang.golf.user.home.VerifyCodeHome;
 import com.jinfang.golf.user.model.User;
-import com.jinfang.golf.utils.EasyImage;
 import com.jinfang.golf.utils.MathUtil;
 import com.jinfang.golf.utils.UploadUtil;
 import com.jinfang.golf.utils.UserHolder;
@@ -126,12 +126,48 @@ public class UserInfoController {
         
         userHome.updateUser(user);
         
-		BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"上传图片成功！");
+		BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"修改成功！");
 	    Type type = new TypeToken<BaseResponseItem<User>>() {}.getType();
 	    result.setData(user);
 	    return "@" + BeanJsonUtils.convertToJson(result,type);
 
     }
+    
+    /**
+     * 球手列表
+     * @param type
+     * @param offset
+     * @param limit
+     * @return
+     * @throws Exception
+     */
+      @Post("list")
+      public String list(@Param("type")Integer type,@Param("offset")Integer offset,@Param("limit")Integer limit) throws Exception {
+
+          User user = userHolder.getUserInfo();
+          List<User> userList = null;
+          
+          offset = offset*limit;
+          
+          if(type==0){
+        	  userList = userHome.getAllUserList(offset, limit);
+          }else if(type==1){
+        	  String city = user.getCity();
+        	  userList = userHome.getAllUserListByCity(offset, limit, city);
+          }else if(type==2){
+        	  
+          }else if(type==3){
+        	  userList = userHome.getAllUserListByStatus(offset, limit,1);
+          }else if(type == 4 ){
+        	  userList = userHome.getAllUserListByStatus(offset, limit,0);
+          }
+          
+  		BaseResponseItem< List<User>> result = new BaseResponseItem< List<User>>(ResponseStatus.OK,"上传图片成功！");
+  	    Type listType = new TypeToken<BaseResponseItem< List<User>>>() {}.getType();
+  	    result.setData(userList);
+  	    return "@" + BeanJsonUtils.convertToJson(result,listType);
+
+      }
     
     /**
      * 处理用户头像
