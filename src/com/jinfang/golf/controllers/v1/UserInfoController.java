@@ -71,7 +71,7 @@ public class UserInfoController {
 		BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"返回用户信息！");
 	    Type type = new TypeToken<BaseResponseItem<User>>() {}.getType();
 	    result.setData(user);
-	    return "@" + BeanJsonUtils.convertToJson(result,type);
+	    return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 
     }
     
@@ -89,10 +89,10 @@ public class UserInfoController {
         user.setHeadUrl(path);
         userHome.updateHeadUrl(user);
         
-		BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"上传图片成功！");
+    	BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"返回用户信息！");
 	    Type type = new TypeToken<BaseResponseItem<User>>() {}.getType();
 	    result.setData(user);
-	    return "@" + BeanJsonUtils.convertToJson(result,type);
+	    return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 
     }
     
@@ -126,10 +126,10 @@ public class UserInfoController {
         
         userHome.updateUser(user);
         
-		BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"修改成功！");
+    	BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"返回用户信息！");
 	    Type type = new TypeToken<BaseResponseItem<User>>() {}.getType();
 	    result.setData(user);
-	    return "@" + BeanJsonUtils.convertToJson(result,type);
+	    return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 
     }
     
@@ -165,7 +165,7 @@ public class UserInfoController {
   		BaseResponseItem< List<User>> result = new BaseResponseItem< List<User>>(ResponseStatus.OK,"上传图片成功！");
   	    Type listType = new TypeToken<BaseResponseItem< List<User>>>() {}.getType();
   	    result.setData(userList);
-  	    return "@" + BeanJsonUtils.convertToJson(result,listType);
+  	    return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result,listType);
 
       }
     

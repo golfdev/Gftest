@@ -67,7 +67,7 @@ public class UserLoginController {
 			BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"登录成功！");
 		    Type type = new TypeToken<BaseResponseItem<User>>() {}.getType();
 		    result.setData(user);
-		    return "@" + BeanJsonUtils.convertToJson(result,type);
+		    return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result,type);
 	    }else{
  	   	 	return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"用户名或密码不正确！"));
 	    }
