@@ -25,6 +25,7 @@ import com.jinfang.golf.sms.home.SmsHome;
 import com.jinfang.golf.user.home.UserHome;
 import com.jinfang.golf.user.home.VerifyCodeHome;
 import com.jinfang.golf.user.model.User;
+import com.jinfang.golf.user.model.UserCentify;
 import com.jinfang.golf.utils.MathUtil;
 import com.jinfang.golf.utils.UploadUtil;
 import com.jinfang.golf.utils.UserHolder;
@@ -104,7 +105,8 @@ public class UserInfoController {
    * @throws Exception
    */
     @Post("edit")
-    public String edit(@Param("userName")String userName,@Param("gender")Integer gender,@Param("city")String city,@Param("description")String description) throws Exception {
+    public String edit(@Param("userName")String userName,@Param("gender")Integer gender,@Param("city")String city,@Param("description")String description,
+    		@Param("realName")String realName,@Param("sfzId")String sfzId) throws Exception {
 
         User user = userHolder.getUserInfo();
         
@@ -125,6 +127,15 @@ public class UserInfoController {
         }
         
         userHome.updateUser(user);
+        
+        if(StringUtils.isNotBlank(realName)&&StringUtils.isNotBlank(sfzId)){
+        	
+        	UserCentify centify = new UserCentify();
+        	centify.setUserId(user.getId());
+        	centify.setRealName(realName);
+        	centify.setSfzId(sfzId);
+        	userHome.saveCentifyInfo(centify);
+        }
         
     	BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"返回用户信息！");
 	    Type type = new TypeToken<BaseResponseItem<User>>() {}.getType();
