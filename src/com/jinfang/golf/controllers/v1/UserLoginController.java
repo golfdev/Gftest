@@ -16,6 +16,8 @@ import com.google.gson.reflect.TypeToken;
 import com.jinfang.golf.api.exception.GolfException;
 import com.jinfang.golf.api.utils.BaseResponseItem;
 import com.jinfang.golf.api.utils.BeanJsonUtils;
+import com.jinfang.golf.constants.DeviceType;
+import com.jinfang.golf.constants.GolfConstant;
 import com.jinfang.golf.constants.ResponseStatus;
 import com.jinfang.golf.interceptor.BaseInterceptor;
 import com.jinfang.golf.passport.model.Passport;
@@ -64,6 +66,15 @@ public class UserLoginController {
 	    if(StringUtils.isNotBlank(pwd)&&pwd.equals(user.getPassWord())){
 	    	String token = passport.createAppToken(user.getId(), Integer.MAX_VALUE);
 			user.setToken(token);
+			
+			//更新登录token
+	        String appKey = inv.getRequest().getHeader("appKey");
+	        String source = DeviceType.ANDROID.getType();
+	        if(StringUtils.equals(appKey, GolfConstant.APPKEY_IOS_VALUE)){
+	        	source = DeviceType.IOS.getType();
+	        }
+ 
+			userHome.updateTokenAndSource(user.getId(),token,source);
 			BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"登录成功！");
 		    Type type = new TypeToken<BaseResponseItem<User>>() {}.getType();
 		    result.setData(user);

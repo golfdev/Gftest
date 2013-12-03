@@ -55,15 +55,15 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
 
         String appKey = inv.getRequest().getHeader("appKey");
         logger.info("appKey:" + inv.getRequest().getHeader("appKey"));
-        if (!StringUtils.equals(appKey, GolfConstant.APPKEY_VALUE)) {
+        if (!(StringUtils.equals(appKey, GolfConstant.APPKEY_ANDROID_VALUE)||StringUtils.equals(appKey, GolfConstant.APPKEY_IOS_VALUE))) {
             JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "appKey error", null);
             return false;
         }
         
-        if(!validateSign(inv)){
-        	JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "参数非法！", null);
-            return false;
-        }
+//        if(!validateSign(inv)){
+//        	JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "参数非法！", null);
+//            return false;
+//        }
 
         stopWatchs.set(new Log4JStopWatch());
         String token = inv.getParameter("token");
@@ -71,7 +71,7 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
         PassportTicket passportTicket = passport.readInToken(token);
         if (passportTicket != null) {
             logger.info("init the user holder");
-            initUserHolder(inv, passportTicket);
+            initUserHolder(inv, passportTicket,token);
         }
         return true;
 
@@ -88,10 +88,12 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
         userHolder.clean();
     }
 
-    private void initUserHolder(Invocation inv, PassportTicket passportTicket) {
-        userHolder.setPassportTicket(passportTicket);
+    private void initUserHolder(Invocation inv, PassportTicket passportTicket,String token) {
         User user = userHome.getById(passportTicket.getUserId());
-        userHolder.setUserInfo(user);
+        if(token.equals(user.getToken())){
+            userHolder.setPassportTicket(passportTicket);
+            userHolder.setUserInfo(user);
+        }        
     }
     
     

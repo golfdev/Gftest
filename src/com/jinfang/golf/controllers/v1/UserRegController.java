@@ -16,6 +16,7 @@ import com.jinfang.golf.api.exception.GolfException;
 import com.jinfang.golf.api.utils.BaseResponseItem;
 import com.jinfang.golf.api.utils.BeanJsonUtils;
 import com.jinfang.golf.api.utils.JsonUtil;
+import com.jinfang.golf.constants.DeviceType;
 import com.jinfang.golf.constants.GolfConstant;
 import com.jinfang.golf.constants.ResponseStatus;
 import com.jinfang.golf.passport.model.Passport;
@@ -182,28 +183,5 @@ public class UserRegController {
 
     }
     
-    @Post("devReg")
-    public String anonymousLogin(@Param("device") String device) throws Exception {
-        
-        
-        if(StringUtils.isBlank(device)){
-            return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"设备号不能为空！"));
-        }
-        
-        User user = userHome.getByDevice(device);
-        
-        if(user==null){
-             user = new User();
-             user.setStatus(0);
-             Integer id = userHome.save(user);
-             userHome.saveUserDevice(id, device);
-        }
-        
-        BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"设备注册成功！");
-        Type type = new TypeToken<BaseResponseItem<User>>() {}.getType();
-        result.setData(user);
-        return "@" + BeanJsonUtils.convertToJson(result,type);
-        
-        
-    }
+   
 }

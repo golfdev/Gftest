@@ -169,6 +169,29 @@ public class UserInfoController {
 
       }
     
+   
+    
+    @Post("uploadDeviceToken")
+    public String uploadDeviceToken(@Param("deviceToken") String deviceToken) throws Exception {
+        
+        
+        if(StringUtils.isBlank(deviceToken)){
+            return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"设备touken不能为空！"));
+        }
+        
+        User user = userHolder.getUserInfo();
+        
+        userHome.uploadDeviceToken(user.getId(), deviceToken);
+        
+        BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK,
+                "上传设备token成功！");
+        Type type = new TypeToken<BaseResponseItem<String>>() {
+        }.getType();
+        return "@" + BeanJsonUtils.convertToJson(result, type);
+        
+        
+    }
+
     /**
      * 处理用户头像
      * @param imgFile
@@ -196,7 +219,6 @@ public class UserInfoController {
         }
         return null;
     }
-
-   
+    
 
 }
