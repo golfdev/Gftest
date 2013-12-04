@@ -21,6 +21,7 @@ import com.jinfang.golf.constants.GolfConstant;
 import com.jinfang.golf.constants.ResponseStatus;
 import com.jinfang.golf.interceptor.LoginRequired;
 import com.jinfang.golf.passport.model.Passport;
+import com.jinfang.golf.relation.home.UserRelationHome;
 import com.jinfang.golf.sms.home.SmsHome;
 import com.jinfang.golf.user.home.UserHome;
 import com.jinfang.golf.user.home.VerifyCodeHome;
@@ -51,6 +52,9 @@ public class UserInfoController {
     
     @Autowired
     private UserHolder userHolder;
+    
+    @Autowired
+    private UserRelationHome userRelationHome;
 
     /**
      * 返回用户基本信息
@@ -66,9 +70,17 @@ public class UserInfoController {
                     + BeanJsonUtils.convertToJsonWithException(new GolfException(
                             ResponseStatus.SERVER_ERROR, "用户id为空！"));
         }
-        
+        User host = userHolder.getUserInfo();
         User user = userHome.getById(id);
-        
+        user.setFollowCount(userRelationHome.getFollowCount(id));
+        user.setFansCount(userRelationHome.getFansCount(id));
+        user.setFriendCount(userRelationHome.getFriendCount(id));
+        if(!host.getId().equals(user.getId())){
+        	  user.setToken(null);
+              user.setPassWord(null);
+              user.setPhone(null);
+        }
+      
 		BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"返回用户信息！");
 	    Type type = new TypeToken<BaseResponseItem<User>>() {}.getType();
 	    result.setData(user);
