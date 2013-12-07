@@ -79,7 +79,12 @@ public class UserInfoController {
         	  user.setToken(null);
               user.setPassWord(null);
               user.setPhone(null);
+        }else{
+        	UserCentify centify = userHome.getUserCentify(id);
+        	user.setRealName(centify.getRealName());
+        	user.setSfzId(centify.getSfzId());
         }
+        
       
 		BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"返回用户信息！");
 	    Type type = new TypeToken<BaseResponseItem<User>>() {}.getType();

@@ -60,10 +60,10 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
             return false;
         }
         
-        if(!validateSign(inv)){
-        	JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "参数非法！", null);
-            return false;
-        }
+//        if(!validateSign(inv)){
+//        	JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "参数非法！", null);
+//            return false;
+//        }
 
         stopWatchs.set(new Log4JStopWatch());
         String token = inv.getParameter("token");
@@ -133,7 +133,7 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
      * 生成sign验证串
      * 因iphone的base64复杂，暂时只是MD5
      */
-    private  String getSignature(String parameters, String secret) {
+    private static String getSignature(String parameters, String secret) {
         MessageDigest md = null;
         try {
             md = MessageDigest.getInstance("MD5");
@@ -149,20 +149,24 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
             result.append(Integer.toHexString((b & 0xf0) >>> 4));
             result.append(Integer.toHexString(b & 0x0f));
         }
-        logger.info("sign="+result.toString());
+//        logger.info("sign="+result.toString());
         return result.toString();
     }
     
+    public int getPriority() {
+        return 300;
+    }
+    
     public static void main(String[] args){
-//    	System.out.println(getSignature("identity=18911082167pwd=%E4%BD%A0%E5%A5%BD","golf_jf_security"));
+    	System.out.println(getSignature("identity=15810738821pwd=123456","golf_jf_security"));
     	
-    	try {
-			System.out.println(URLEncoder.encode("你好", "utf-8"));
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-   
+//    	try {
+//			System.out.println(URLEncoder.encode("你好", "utf-8"));
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//   
     	
     }
 
