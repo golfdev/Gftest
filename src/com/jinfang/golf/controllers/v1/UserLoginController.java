@@ -19,8 +19,8 @@ import com.jinfang.golf.api.utils.BeanJsonUtils;
 import com.jinfang.golf.constants.DeviceType;
 import com.jinfang.golf.constants.GolfConstant;
 import com.jinfang.golf.constants.ResponseStatus;
-import com.jinfang.golf.interceptor.BaseInterceptor;
 import com.jinfang.golf.passport.model.Passport;
+import com.jinfang.golf.relation.home.UserRelationHome;
 import com.jinfang.golf.user.home.UserHome;
 import com.jinfang.golf.user.model.User;
 import com.jinfang.golf.utils.FormatCheckUtil;
@@ -36,6 +36,9 @@ public class UserLoginController {
 	
 	@Autowired
 	private Passport passport;
+	
+	@Autowired
+	private UserRelationHome userRelationHome;
 	
 	/**
 	 * 登录，返回授权token
@@ -73,6 +76,10 @@ public class UserLoginController {
 	        if(StringUtils.equals(appKey, GolfConstant.APPKEY_IOS_VALUE)){
 	        	source = DeviceType.IOS.getType();
 	        }
+	        
+	        user.setFollowCount(userRelationHome.getFollowCount(user.getId()));
+	        user.setFansCount(userRelationHome.getFansCount(user.getId()));
+	        user.setFriendCount(userRelationHome.getFriendCount(user.getId()));
  
 			userHome.updateTokenAndSource(user.getId(),token,source);
 			BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"登录成功！");
