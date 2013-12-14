@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.reflect.TypeToken;
+import com.jinfang.golf.api.exception.GolfException;
 import com.jinfang.golf.api.utils.BaseResponseItem;
 import com.jinfang.golf.api.utils.BeanJsonUtils;
 import com.jinfang.golf.constants.ResponseStatus;
@@ -68,6 +69,9 @@ public class GroupController {
 	@Post("addUser")
 	public String addUser(@Param("groupId") int groupId, @Param("userId") String id) throws Exception {
 		int userId = Integer.parseInt(id);
+		if (groupId <= 0 || userId <= 0) {
+			return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"缺少group_id和user_id"));
+		}
 		groupManager.addUser(groupId, userId);
 		BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK, "添加用户成功!");
 		Type type = new TypeToken<BaseResponseItem<String>>() {}.getType();
@@ -77,6 +81,9 @@ public class GroupController {
 	@Post("delUser")
 	public String delUser(@Param("groupId") int groupId, @Param("userId") String id) throws Exception {
 		int userId = Integer.parseInt(id);
+		if (groupId <= 0 || userId <= 0) {
+			return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"缺少group_id和user_id"));
+		}
 		groupManager.delUser(groupId, userId);
 		BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK, "删除用户成功!");
 		Type type = new TypeToken<BaseResponseItem<String>>() {}.getType();
@@ -135,6 +142,9 @@ public class GroupController {
 	// userIds预留着，对于那些已经退群当时客户端仍然保存了他们的聊天记录的用户，需要显示
 	@Post("getUsers")
 	public String getUsers(@Param("groupId") int groupId, @Param("offset") int offset, @Param("limit") int limit) throws Exception {
+		if (groupId <= 0) {
+			return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"缺少group_id"));
+		}
 		offset = offset < 0 ? 0 : offset;
 		limit = limit <= 0 ? 100 : limit;
 		List<GroupUserModel> models = new ArrayList<GroupUserModel>();

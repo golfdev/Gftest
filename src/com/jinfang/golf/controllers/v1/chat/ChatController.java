@@ -22,11 +22,9 @@ import com.jinfang.golf.xmpp.model.Audio;
 import com.jinfang.golf.xmpp.model.Photo;
 
 import net.paoding.rose.web.annotation.Param;
-import net.paoding.rose.web.annotation.Path;
 import net.paoding.rose.web.annotation.rest.Post;
 
 @LoginRequired
-@Path("chat")
 public class ChatController {
 	@Post("uploadPhoto")
 	public String uploadPhoto(@Param("photo") MultipartFile file) throws Exception {
