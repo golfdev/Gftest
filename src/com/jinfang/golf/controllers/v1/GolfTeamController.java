@@ -210,6 +210,37 @@ public class GolfTeamController {
 		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 
 	}
+	
+	/**
+	 * 编辑球队信息
+	 * 
+	 * @param id
+	 * @param name
+	 * @param city
+	 * @param logo
+	 * @param contacts
+	 * @param phone
+	 * @param clubName
+	 * @return
+	 * @throws Exception
+	 */
+	@LoginRequired
+	@CentifyRequired
+	@Post("editNotice")
+	public String editNotice(@Param("id") Integer id, @Param("notice") String notice) throws Exception {
+
+		GolfTeam team = userTeamHome.getGolfTeamById(id);
+		team.setNotice(notice);
+		
+		userTeamHome.updateGolfTeamNotice(team);
+
+		BaseResponseItem<String> result = new BaseResponseItem<String>(
+				ResponseStatus.OK, "更新成功！");
+		Type type = new TypeToken<BaseResponseItem<String>>() {
+		}.getType();
+		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+
+	}
 
 	/**
 	 * 球队列表
@@ -351,6 +382,37 @@ public class GolfTeamController {
 
 		
 		  BaseResponseItem<String> result = new BaseResponseItem<String>(
+					ResponseStatus.OK, "邀请成功！");
+			Type type = new TypeToken<BaseResponseItem<String>>() {
+			}.getType();
+			return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+
+	}
+	
+	/**
+	 * 移除成员
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	@Post("removeMember")
+	public String removeUser(@Param("userId") Integer userId,@Param("teamId") Integer teamId)
+			throws Exception {
+		
+          GolfTeam team = userTeamHome.getGolfTeamById(teamId);
+		  User host = userHolder.getUserInfo();
+		  if(team.getCreatorId().equals(host.getId())){
+			  userTeamHome.removeFromTeam(userId, teamId);
+		  }else{
+			  BaseResponseItem<String> result = new BaseResponseItem<String>(
+						ResponseStatus.SERVER_ERROR, "无权限！");
+		      Type type = new TypeToken<BaseResponseItem<String>>() {
+				}.getType();
+			  return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+
+		  }
+		 
+		    BaseResponseItem<String> result = new BaseResponseItem<String>(
 					ResponseStatus.OK, "邀请成功！");
 			Type type = new TypeToken<BaseResponseItem<String>>() {
 			}.getType();
