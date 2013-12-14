@@ -232,7 +232,7 @@ public class UserInfoController {
         String fileName = imgFile.getOriginalFilename();
         String name = String.valueOf(System.currentTimeMillis());
         String suffix = fileName.substring(fileName.lastIndexOf("."), fileName.length());
-        String saveFilePath = GolfConstant.HEAD_PATH + "/head/" + MathUtil.getImgFileDirectory() + "/" ;
+        String saveFilePath = GolfConstant.HEAD_PATH + "/head/" + MathUtil.getImgFileDirectory() + "/";
         String saveDBPath = "/head/" + MathUtil.getImgFileDirectory() + "/";
         try {
             UploadUtil.saveFile(imgFile, saveFilePath, name + suffix);
