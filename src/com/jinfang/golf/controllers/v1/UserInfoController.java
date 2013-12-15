@@ -83,8 +83,10 @@ public class UserInfoController {
 			user.setPhone(null);
 		} else {
 			UserCentify centify = userHome.getUserCentify(id);
-			user.setRealName(centify.getRealName());
-			user.setSfzId(centify.getSfzId());
+			if(centify!=null){
+				user.setRealName(centify.getRealName());
+				user.setSfzId(centify.getSfzId());
+			}
 		}
 
 		BaseResponseItem<User> result = new BaseResponseItem<User>(

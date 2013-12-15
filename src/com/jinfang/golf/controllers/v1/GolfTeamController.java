@@ -384,7 +384,7 @@ public class GolfTeamController {
 
 		BaseResponseItem<List<User>> result = new BaseResponseItem<List<User>>(
 				ResponseStatus.OK, "成功！");
-		Type listType = new TypeToken<BaseResponseItem<List<GolfTeam>>>() {
+		Type listType = new TypeToken<BaseResponseItem<List<User>>>() {
 		}.getType();
 		result.setData(userList);
 		return "@"
