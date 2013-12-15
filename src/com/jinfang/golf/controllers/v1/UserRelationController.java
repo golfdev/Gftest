@@ -22,73 +22,73 @@ import com.jinfang.golf.utils.UserHolder;
 @LoginRequired
 @Path("relation")
 public class UserRelationController {
-	
-	
 
-    @Autowired
-    private Invocation inv;
+	@Autowired
+	private Invocation inv;
 
-    @Autowired
-    private UserRelationHome userRelationHome;
-    
-    @Autowired
-    private UserHolder userHolder;
+	@Autowired
+	private UserRelationHome userRelationHome;
 
-    /**
-     * 关注
-     * @param userId
-     * @return
-     * @throws Exception
-     */
-    @Post("follow")
-    public String follow(@Param("userId") Integer userId) throws Exception {
+	@Autowired
+	private UserHolder userHolder;
 
-        if (userId==null||userId==0) {
-            return "@"
-                    + BeanJsonUtils.convertToJsonWithException(new GolfException(
-                            ResponseStatus.SERVER_ERROR, "用户id为空！"));
-        }
-        
-        UserRelation relation = new UserRelation();
-        relation.setFromUid(userHolder.getUserInfo().getId());
-        relation.setToUid(userId);
+	/**
+	 * 关注
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	@Post("follow")
+	public String follow(@Param("userId") Integer userId) throws Exception {
 
-        userRelationHome.addRelation(relation);
-        
-        BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK,
-                "关注成功！");
-        Type type = new TypeToken<BaseResponseItem<String>>() {
-        }.getType();
-        return "@" + BeanJsonUtils.convertToJson(result, type);
+		if (userId == null || userId == 0) {
+			return "@"
+					+ BeanJsonUtils
+							.convertToJsonWithException(new GolfException(
+									ResponseStatus.SERVER_ERROR, "用户id为空！"));
+		}
 
-    }
-    
-    /**
-     * 取消关注
-     * @param userId
-     * @return
-     * @throws Exception
-     */
-    @Post("unFollow")
-    public String unFollow(@Param("userId") Integer userId) throws Exception {
+		UserRelation relation = new UserRelation();
+		relation.setFromUid(userHolder.getUserInfo().getId());
+		relation.setToUid(userId);
 
-        if (userId==null||userId==0) {
-            return "@"
-                    + BeanJsonUtils.convertToJsonWithException(new GolfException(
-                            ResponseStatus.SERVER_ERROR, "用户id为空！"));
-        }
- 
+		userRelationHome.addRelation(relation);
 
-        userRelationHome.removeRelation(userHolder.getUserInfo().getId(), userId);
-        
-        BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK,
-                "取消关注成功！");
-        Type type = new TypeToken<BaseResponseItem<String>>() {
-        }.getType();
-        return "@" + BeanJsonUtils.convertToJson(result, type);
+		BaseResponseItem<String> result = new BaseResponseItem<String>(
+				ResponseStatus.OK, "关注成功！");
+		Type type = new TypeToken<BaseResponseItem<String>>() {
+		}.getType();
+		return "@" + BeanJsonUtils.convertToJson(result, type);
 
-    }
-    
-   
+	}
+
+	/**
+	 * 取消关注
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	@Post("unFollow")
+	public String unFollow(@Param("userId") Integer userId) throws Exception {
+
+		if (userId == null || userId == 0) {
+			return "@"
+					+ BeanJsonUtils
+							.convertToJsonWithException(new GolfException(
+									ResponseStatus.SERVER_ERROR, "用户id为空！"));
+		}
+
+		userRelationHome.removeRelation(userHolder.getUserInfo().getId(),
+				userId);
+
+		BaseResponseItem<String> result = new BaseResponseItem<String>(
+				ResponseStatus.OK, "取消关注成功！");
+		Type type = new TypeToken<BaseResponseItem<String>>() {
+		}.getType();
+		return "@" + BeanJsonUtils.convertToJson(result, type);
+
+	}
 
 }

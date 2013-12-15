@@ -30,7 +30,6 @@ import com.jinfang.golf.utils.MathUtil;
 import com.jinfang.golf.utils.UploadUtil;
 import com.jinfang.golf.utils.UserHolder;
 
-
 @Path("team")
 public class GolfTeamController {
 
@@ -42,7 +41,6 @@ public class GolfTeamController {
 
 	@Autowired
 	private UserTeamHome userTeamHome;
-	
 
 	@Autowired
 	private UserHolder userHolder;
@@ -65,9 +63,9 @@ public class GolfTeamController {
 	public String createTeam(@Param("name") String name,
 			@Param("city") String city, @Param("logo") String logo,
 			@Param("contacts") String contacts, @Param("phone") String phone,
-			@Param("purpose") String purpose, @Param("description") String description,
-			@Param("createdDate") String createdDate
-			) throws Exception {
+			@Param("purpose") String purpose,
+			@Param("description") String description,
+			@Param("createdDate") String createdDate) throws Exception {
 
 		GolfTeam team = new GolfTeam();
 		team.setName(name);
@@ -81,7 +79,7 @@ public class GolfTeamController {
 		team.setPurpose(purpose);
 		team.setDescription(description);
 		userTeamHome.createGolfTeam(team);
-
+		team.setLogo(GolfConstant.IMAGE_DOMAIN + team.getLogo());
 		BaseResponseItem<String> result = new BaseResponseItem<String>(
 				ResponseStatus.OK, "创建球队成功！");
 		Type type = new TypeToken<BaseResponseItem<String>>() {
@@ -89,64 +87,67 @@ public class GolfTeamController {
 		return "@" + BeanJsonUtils.convertToJson(result, type);
 
 	}
-	
-	
+
 	/**
-     * 返回球队基本信息
-     * @param id
-     * @return
-     * @throws Exception
-     */
+	 * 返回球队基本信息
+	 * 
+	 * @param id
+	 * @return
+	 * @throws Exception
+	 */
 	@LoginRequired
-    @Post("show")
-    public String show(@Param("id") Integer id) throws Exception {
+	@Post("show")
+	public String show(@Param("id") Integer id) throws Exception {
 
-        if (id==null||id==0) {
-            return "@"
-                    + BeanJsonUtils.convertToJsonWithException(new GolfException(
-                            ResponseStatus.SERVER_ERROR, "球队id为空！"));
-        }
-        GolfTeam team = userTeamHome.getGolfTeamById(id);
+		if (id == null || id == 0) {
+			return "@"
+					+ BeanJsonUtils
+							.convertToJsonWithException(new GolfException(
+									ResponseStatus.SERVER_ERROR, "球队id为空！"));
+		}
+		GolfTeam team = userTeamHome.getGolfTeamById(id);
 
-       
-		BaseResponseItem<GolfTeam> result = new BaseResponseItem<GolfTeam>(ResponseStatus.OK,"返回球队信息！");
-	    Type type = new TypeToken<BaseResponseItem<GolfTeam>>() {}.getType();
-	    result.setData(team);
-	    return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+		team.setLogo(GolfConstant.IMAGE_DOMAIN + team.getLogo());
+		BaseResponseItem<GolfTeam> result = new BaseResponseItem<GolfTeam>(
+				ResponseStatus.OK, "返回球队信息！");
+		Type type = new TypeToken<BaseResponseItem<GolfTeam>>() {
+		}.getType();
+		result.setData(team);
+		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 
-    }
-    
-    
-    /**
-     * 返回球队基本信息
-     * @param id
-     * @return
-     * @throws Exception
-     */
-    @Post("apply")
-    public String apply(@Param("teamId") Integer teamId) throws Exception {
+	}
 
-        if (teamId==null||teamId==0) {
-            return "@"
-                    + BeanJsonUtils.convertToJsonWithException(new GolfException(
-                            ResponseStatus.SERVER_ERROR, "球队id为空！"));
-        }
-        
-//        User host =  userHolder.getUserInfo();
-//        UserTeamApply apply = new UserTeamApply();
-//        apply.setUserId(host.getId());
-//        apply.setTeamId(teamId);
-//        apply.setStatus(0);
-//        userTeamHome.addApply(apply);
-       
-        BaseResponseItem<String> result = new BaseResponseItem<String>(
+	/**
+	 * 返回球队基本信息
+	 * 
+	 * @param id
+	 * @return
+	 * @throws Exception
+	 */
+	@Post("apply")
+	public String apply(@Param("teamId") Integer teamId) throws Exception {
+
+		if (teamId == null || teamId == 0) {
+			return "@"
+					+ BeanJsonUtils
+							.convertToJsonWithException(new GolfException(
+									ResponseStatus.SERVER_ERROR, "球队id为空！"));
+		}
+
+		// User host = userHolder.getUserInfo();
+		// UserTeamApply apply = new UserTeamApply();
+		// apply.setUserId(host.getId());
+		// apply.setTeamId(teamId);
+		// apply.setStatus(0);
+		// userTeamHome.addApply(apply);
+
+		BaseResponseItem<String> result = new BaseResponseItem<String>(
 				ResponseStatus.OK, "发送成功！");
 		Type type = new TypeToken<BaseResponseItem<String>>() {
 		}.getType();
 		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 
-
-    }
+	}
 
 	/**
 	 * 上传球队logo
@@ -158,10 +159,10 @@ public class GolfTeamController {
 	@LoginRequired
 	@CentifyRequired
 	@Post("uploadPhoto")
-	public String uploadPhoto(@Param("logo") MultipartFile userHead)
+	public String uploadPhoto(@Param("logo") MultipartFile logo)
 			throws Exception {
 
-		String path = processTeamLogo(userHead);
+		String path = processTeamLogo(logo);
 
 		BaseResponseItem<String> result = new BaseResponseItem<String>(
 				ResponseStatus.OK, "返回用户信息！");
@@ -191,7 +192,8 @@ public class GolfTeamController {
 	public String edit(@Param("id") Integer id, @Param("name") String name,
 			@Param("city") String city, @Param("logo") String logo,
 			@Param("contacts") String contacts, @Param("phone") String phone,
-			@Param("purpose") String purpose, @Param("description") String description) throws Exception {
+			@Param("purpose") String purpose,
+			@Param("description") String description) throws Exception {
 
 		GolfTeam team = userTeamHome.getGolfTeamById(id);
 		team.setCity(city);
@@ -210,28 +212,24 @@ public class GolfTeamController {
 		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 
 	}
-	
+
 	/**
-	 * 编辑球队信息
+	 * 编辑球队公告
 	 * 
 	 * @param id
-	 * @param name
-	 * @param city
-	 * @param logo
-	 * @param contacts
-	 * @param phone
-	 * @param clubName
+	 * @param notice
 	 * @return
 	 * @throws Exception
 	 */
 	@LoginRequired
 	@CentifyRequired
 	@Post("editNotice")
-	public String editNotice(@Param("id") Integer id, @Param("notice") String notice) throws Exception {
+	public String editNotice(@Param("id") Integer id,
+			@Param("notice") String notice) throws Exception {
 
 		GolfTeam team = userTeamHome.getGolfTeamById(id);
 		team.setNotice(notice);
-		
+
 		userTeamHome.updateGolfTeamNotice(team);
 
 		BaseResponseItem<String> result = new BaseResponseItem<String>(
@@ -257,15 +255,21 @@ public class GolfTeamController {
 			throws Exception {
 
 		offset = offset * limit;
-		
+
 		User host = userHolder.getUserInfo();
 		Integer userId = 0;
-		if(host!=null){
+		if (host != null) {
 			userId = host.getId();
 		}
 
-		List<GolfTeam> teamList = userTeamHome.getGolfTeamList(userId,city, offset,
-				limit);
+		List<GolfTeam> teamList = userTeamHome.getGolfTeamList(userId, city,
+				offset, limit);
+
+		if (teamList != null) {
+			for (GolfTeam team : teamList) {
+				team.setLogo(GolfConstant.IMAGE_DOMAIN + team.getLogo());
+			}
+		}
 
 		BaseResponseItem<List<GolfTeam>> result = new BaseResponseItem<List<GolfTeam>>(
 				ResponseStatus.OK, "成功！");
@@ -276,29 +280,34 @@ public class GolfTeamController {
 				+ BeanJsonUtils.convertToJsonWithGsonBuilder(result, listType);
 
 	}
-	
-	
+
 	/**
 	 * 加入的球队列表
+	 * 
 	 * @param offset
 	 * @param limit
 	 * @return
 	 * @throws Exception
 	 */
 	@Post("joinList")
-	public String joinList(
-			@Param("offset") Integer offset, @Param("limit") Integer limit)
-			throws Exception {
+	public String joinList(@Param("offset") Integer offset,
+			@Param("limit") Integer limit) throws Exception {
 
 		offset = offset * limit;
-		
+
 		User host = userHolder.getUserInfo();
 		Integer userId = 0;
-		if(host!=null){
+		if (host != null) {
 			userId = host.getId();
 		}
 
-		List<GolfTeam> teamList = userTeamHome.getJoinedGolfTeamList(userId, offset, limit);
+		List<GolfTeam> teamList = userTeamHome.getJoinedGolfTeamList(userId,
+				offset, limit);
+		if (teamList != null) {
+			for (GolfTeam team : teamList) {
+				team.setLogo(GolfConstant.IMAGE_DOMAIN + team.getLogo());
+			}
+		}
 
 		BaseResponseItem<List<GolfTeam>> result = new BaseResponseItem<List<GolfTeam>>(
 				ResponseStatus.OK, "成功！");
@@ -309,28 +318,35 @@ public class GolfTeamController {
 				+ BeanJsonUtils.convertToJsonWithGsonBuilder(result, listType);
 
 	}
-	
+
 	/**
 	 * 创建球队列表
+	 * 
 	 * @param offset
 	 * @param limit
 	 * @return
 	 * @throws Exception
 	 */
 	@Post("createdList")
-	public String createdList(
-			@Param("offset") Integer offset, @Param("limit") Integer limit)
-			throws Exception {
+	public String createdList(@Param("offset") Integer offset,
+			@Param("limit") Integer limit) throws Exception {
 
 		offset = offset * limit;
-		
+
 		User host = userHolder.getUserInfo();
 		Integer userId = 0;
-		if(host!=null){
+		if (host != null) {
 			userId = host.getId();
 		}
 
-		List<GolfTeam> teamList = userTeamHome.getMyCreatedGolfTeamList(userId, offset, limit);
+		List<GolfTeam> teamList = userTeamHome.getMyCreatedGolfTeamList(userId,
+				offset, limit);
+
+		if (teamList != null) {
+			for (GolfTeam team : teamList) {
+				team.setLogo(GolfConstant.IMAGE_DOMAIN + team.getLogo());
+			}
+		}
 
 		BaseResponseItem<List<GolfTeam>> result = new BaseResponseItem<List<GolfTeam>>(
 				ResponseStatus.OK, "成功！");
@@ -341,9 +357,10 @@ public class GolfTeamController {
 				+ BeanJsonUtils.convertToJsonWithGsonBuilder(result, listType);
 
 	}
-	
+
 	/**
 	 * 成员列表
+	 * 
 	 * @param offset
 	 * @param limit
 	 * @return
@@ -355,8 +372,15 @@ public class GolfTeamController {
 			throws Exception {
 
 		offset = offset * limit;
-		
-		List<User> userList = userTeamHome.getMemberListByTeamId(teamId, offset, limit);
+
+		List<User> userList = userTeamHome.getMemberListByTeamId(teamId,
+				offset, limit);
+
+		if (userList != null) {
+			for (User user : userList) {
+				user.setHeadUrl(GolfConstant.IMAGE_DOMAIN + user.getHeadUrl());
+			}
+		}
 
 		BaseResponseItem<List<User>> result = new BaseResponseItem<List<User>>(
 				ResponseStatus.OK, "成功！");
@@ -367,61 +391,58 @@ public class GolfTeamController {
 				+ BeanJsonUtils.convertToJsonWithGsonBuilder(result, listType);
 
 	}
-	
-	
+
 	/**
 	 * 成员列表
+	 * 
 	 * @param offset
 	 * @param limit
 	 * @return
 	 * @throws Exception
 	 */
 	@Post("invite")
-	public String invite(@Param("userId") Integer userId)
-			throws Exception {
+	public String invite(@Param("userId") Integer userId) throws Exception {
 
-		
-		  BaseResponseItem<String> result = new BaseResponseItem<String>(
-					ResponseStatus.OK, "邀请成功！");
-			Type type = new TypeToken<BaseResponseItem<String>>() {
-			}.getType();
-			return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+		BaseResponseItem<String> result = new BaseResponseItem<String>(
+				ResponseStatus.OK, "邀请成功！");
+		Type type = new TypeToken<BaseResponseItem<String>>() {
+		}.getType();
+		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 
 	}
-	
+
 	/**
 	 * 移除成员
+	 * 
 	 * @param userId
 	 * @return
 	 * @throws Exception
 	 */
 	@Post("removeMember")
-	public String removeUser(@Param("userId") Integer userId,@Param("teamId") Integer teamId)
-			throws Exception {
-		
-          GolfTeam team = userTeamHome.getGolfTeamById(teamId);
-		  User host = userHolder.getUserInfo();
-		  if(team.getCreatorId().equals(host.getId())){
-			  userTeamHome.removeFromTeam(userId, teamId);
-		  }else{
-			  BaseResponseItem<String> result = new BaseResponseItem<String>(
-						ResponseStatus.SERVER_ERROR, "无权限！");
-		      Type type = new TypeToken<BaseResponseItem<String>>() {
-				}.getType();
-			  return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+	public String removeUser(@Param("userId") Integer userId,
+			@Param("teamId") Integer teamId) throws Exception {
 
-		  }
-		 
-		    BaseResponseItem<String> result = new BaseResponseItem<String>(
-					ResponseStatus.OK, "邀请成功！");
+		GolfTeam team = userTeamHome.getGolfTeamById(teamId);
+		User host = userHolder.getUserInfo();
+		if (team.getCreatorId().equals(host.getId())) {
+			userTeamHome.removeFromTeam(userId, teamId);
+		} else {
+			BaseResponseItem<String> result = new BaseResponseItem<String>(
+					ResponseStatus.SERVER_ERROR, "无权限！");
 			Type type = new TypeToken<BaseResponseItem<String>>() {
 			}.getType();
-			return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+			return "@"
+					+ BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+
+		}
+
+		BaseResponseItem<String> result = new BaseResponseItem<String>(
+				ResponseStatus.OK, "移除成功！");
+		Type type = new TypeToken<BaseResponseItem<String>>() {
+		}.getType();
+		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 
 	}
-
-
-
 
 	/**
 	 * 处理logo
@@ -437,7 +458,7 @@ public class GolfTeamController {
 		String name = String.valueOf(System.currentTimeMillis());
 		String suffix = fileName.substring(fileName.lastIndexOf("."),
 				fileName.length());
-		String saveFilePath = GolfConstant.HEAD_PATH + "/logo/"
+		String saveFilePath = GolfConstant.IMAGE_PATH + "/logo/"
 				+ MathUtil.getImgFileDirectory() + "/";
 		String saveDBPath = "/logo/" + MathUtil.getImgFileDirectory() + "/";
 		try {

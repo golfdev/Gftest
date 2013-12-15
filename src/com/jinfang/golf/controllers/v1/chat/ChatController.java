@@ -35,8 +35,8 @@ public class ChatController {
 		}
 		int size = (int)file.getSize();
 		String absoluteName = "/chat/" + MathUtil.getImgFileDirectory() + "/" + generateFileName() + getFileSuffix(file.getOriginalFilename());
-		String imageFileName = GolfConstant.HEAD_PATH + absoluteName;
-		String url = GolfConstant.HEAD_DOMAIN + absoluteName;
+		String imageFileName = GolfConstant.IMAGE_PATH + absoluteName;
+		String url = GolfConstant.IMAGE_DOMAIN + absoluteName;
         File image = savePhoto(file, imageFileName);
         BufferedImage bi = ImageIO.read(image);
         

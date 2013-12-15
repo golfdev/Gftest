@@ -198,21 +198,27 @@ public class UserRegController {
 				// 保存设备号
 				userHome.saveUserDevice(userId, device);
 				// }
-				String token = passport.createAppToken(userId, Integer.MAX_VALUE);
+				String token = passport.createAppToken(userId,
+						Integer.MAX_VALUE);
 				user.setToken(token);
-				
-				//更新登录token
-		        String appKey = inv.getRequest().getHeader("appKey");
-		        String source = DeviceType.ANDROID.getType();
-		        if(StringUtils.equals(appKey, GolfConstant.APPKEY_IOS_VALUE)){
-		        	source = DeviceType.IOS.getType();
-		        }
-	 
-				userHome.updateTokenAndSource(userId,token,source);
-				BaseResponseItem<User> result = new BaseResponseItem<User>(ResponseStatus.OK,"注册成功！");
-			    Type type = new TypeToken<BaseResponseItem<User>>() {}.getType();
-			    result.setData(user);
-			    return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result,type);
+				user.setHeadUrl(GolfConstant.IMAGE_DOMAIN + user.getHeadUrl());
+
+				// 更新登录token
+				String appKey = inv.getRequest().getHeader("appKey");
+				String source = DeviceType.ANDROID.getType();
+				if (StringUtils.equals(appKey, GolfConstant.APPKEY_IOS_VALUE)) {
+					source = DeviceType.IOS.getType();
+				}
+
+				userHome.updateTokenAndSource(userId, token, source);
+				BaseResponseItem<User> result = new BaseResponseItem<User>(
+						ResponseStatus.OK, "注册成功！");
+				Type type = new TypeToken<BaseResponseItem<User>>() {
+				}.getType();
+				result.setData(user);
+				return "@"
+						+ BeanJsonUtils.convertToJsonWithGsonBuilder(result,
+								type);
 
 			}
 		}
