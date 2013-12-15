@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.reflect.TypeToken;
+import com.jinfang.golf.api.exception.GolfException;
 import com.jinfang.golf.api.utils.BaseResponseItem;
 import com.jinfang.golf.api.utils.BeanJsonUtils;
 import com.jinfang.golf.constants.ResponseStatus;
@@ -66,9 +67,15 @@ public class GroupController {
 	    return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 	}
 	@Post("addUser")
-	public String addUser(@Param("groupId") int groupId, @Param("userId") String id) throws Exception {
-		int userId = Integer.parseInt(id);
-		groupManager.addUser(groupId, userId);
+	public String addUser(@Param("groupId") int groupId, @Param("userIds") String ids) throws Exception {
+		if (groupId <= 0 || StringUtils.isBlank(ids)) {
+			return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"缺少groupId和userIds"));
+		}
+		Set<Integer> set = new HashSet<Integer>();
+		for (String id : ids.split(",")) {
+			set.add(Integer.parseInt(id));
+		}
+		groupManager.addUser(groupId, set);
 		BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK, "添加用户成功!");
 		Type type = new TypeToken<BaseResponseItem<String>>() {}.getType();
 	    
@@ -77,6 +84,9 @@ public class GroupController {
 	@Post("delUser")
 	public String delUser(@Param("groupId") int groupId, @Param("userId") String id) throws Exception {
 		int userId = Integer.parseInt(id);
+		if (groupId <= 0 || userId <= 0) {
+			return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"缺少groupId和userId"));
+		}
 		groupManager.delUser(groupId, userId);
 		BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK, "删除用户成功!");
 		Type type = new TypeToken<BaseResponseItem<String>>() {}.getType();
@@ -135,6 +145,9 @@ public class GroupController {
 	// userIds预留着，对于那些已经退群当时客户端仍然保存了他们的聊天记录的用户，需要显示
 	@Post("getUsers")
 	public String getUsers(@Param("groupId") int groupId, @Param("offset") int offset, @Param("limit") int limit) throws Exception {
+		if (groupId <= 0) {
+			return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"缺少groupId"));
+		}
 		offset = offset < 0 ? 0 : offset;
 		limit = limit <= 0 ? 100 : limit;
 		List<GroupUserModel> models = new ArrayList<GroupUserModel>();
@@ -168,6 +181,31 @@ public class GroupController {
 	// userIds预留着，对于那些已经退群当时客户端仍然保存了他们的聊天记录的用户，需要显示
 	@Post("getSpecifyUsers")
 	public String getSpecifyUsers(@Param("groupId") int groupId, @Param("userIds") String ids) throws Exception {
-		return null;
+		if (groupId <= 0 || StringUtils.isBlank(ids)) {
+			return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"缺少groupId和userIds"));
+		}
+		List<GroupUserModel> list = new ArrayList<GroupUserModel>();
+		for (String id : ids.split(",")) {
+			int userId = Integer.parseInt(id);
+			User user = userHome.getById(userId);
+			if (user != null) {
+				GroupUserModel gum = new GroupUserModel();
+				gum.setUserId(userId);
+				gum.setUserName(user.getUserName());
+				gum.setHeadurl(gum.getHeadurl());
+				UserGroup ug = userGroupHome.get(userId, groupId);
+				if (ug != null) {
+					gum.setStatus(0);
+				} else {
+					gum.setStatus(1);
+				}
+				list.add(gum);
+			}
+		}
+		
+		BaseResponseItem<List<GroupUserModel>> result = new BaseResponseItem<List<GroupUserModel>>(ResponseStatus.OK, "获取微群指定成功!");
+		Type type = new TypeToken<BaseResponseItem<List<GroupUserModel>>>() {}.getType();
+		result.setData(list);
+		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 	}
 }

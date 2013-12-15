@@ -1,4 +1,4 @@
-package com.jinfang.golf.controllers.v1.chat;
+package com.jinfang.golf.controllers.v1;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -6,10 +6,6 @@ import java.lang.reflect.Type;
 import java.util.UUID;
 
 import javax.imageio.ImageIO;
-
-import net.paoding.rose.web.annotation.Param;
-import net.paoding.rose.web.annotation.Path;
-import net.paoding.rose.web.annotation.rest.Post;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +20,10 @@ import com.jinfang.golf.utils.IdSeqUtils;
 import com.jinfang.golf.utils.MathUtil;
 import com.jinfang.golf.xmpp.model.Audio;
 import com.jinfang.golf.xmpp.model.Photo;
+
+import net.paoding.rose.web.annotation.Param;
+import net.paoding.rose.web.annotation.Path;
+import net.paoding.rose.web.annotation.rest.Post;
 
 @LoginRequired
 @Path("chat")
