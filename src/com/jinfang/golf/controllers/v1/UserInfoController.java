@@ -77,6 +77,12 @@ public class UserInfoController {
 		user.setFollowCount(userRelationHome.getFollowCount(id));
 		user.setFansCount(userRelationHome.getFansCount(id));
 		user.setFriendCount(userRelationHome.getFriendCount(id));
+		
+		if(StringUtils.isNotBlank(user.getHeadUrl())){
+			user.setHeadUrl(GolfConstant.IMAGE_DOMAIN + user.getHeadUrl());
+		}else{
+			user.setHeadUrl(GolfConstant.IMAGE_DOMAIN +GolfConstant.DEFAULT_HEAD_URL);
+		}
 		if (!host.getId().equals(user.getId())) {
 			user.setToken(null);
 			user.setPassWord(null);
@@ -151,7 +157,6 @@ public class UserInfoController {
 
 		if (StringUtils.isNotBlank(city)) {
 			user.setCity(city);
-			;
 		}
 
 		if (StringUtils.isNotBlank(description)) {
@@ -159,6 +164,12 @@ public class UserInfoController {
 		}
 
 		userHome.updateUser(user);
+		
+		if(StringUtils.isNotBlank(user.getHeadUrl())){
+			user.setHeadUrl(GolfConstant.IMAGE_DOMAIN + user.getHeadUrl());
+		}else{
+			user.setHeadUrl(GolfConstant.IMAGE_DOMAIN +GolfConstant.DEFAULT_HEAD_URL);
+		}
 
 		if (StringUtils.isNotBlank(realName) && StringUtils.isNotBlank(sfzId)) {
 
@@ -212,7 +223,12 @@ public class UserInfoController {
 
 		if (userList != null) {
 			for (User temp : userList) {
-				temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN + temp.getHeadUrl());
+				if(StringUtils.isNotBlank(temp.getHeadUrl())){
+					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN + temp.getHeadUrl());
+				}else{
+					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN +GolfConstant.DEFAULT_HEAD_URL);
+				}
+				
 			}
 		}
 

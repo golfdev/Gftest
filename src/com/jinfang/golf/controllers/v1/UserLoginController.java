@@ -92,7 +92,11 @@ public class UserLoginController {
 			user.setFollowCount(userRelationHome.getFollowCount(user.getId()));
 			user.setFansCount(userRelationHome.getFansCount(user.getId()));
 			user.setFriendCount(userRelationHome.getFriendCount(user.getId()));
-			user.setHeadUrl(GolfConstant.IMAGE_DOMAIN + user.getHeadUrl());
+			if(StringUtils.isNotBlank(user.getHeadUrl())){
+				user.setHeadUrl(GolfConstant.IMAGE_DOMAIN + user.getHeadUrl());
+			}else{
+				user.setHeadUrl(GolfConstant.IMAGE_DOMAIN +GolfConstant.DEFAULT_HEAD_URL);
+			}
 			userHome.updateTokenAndSource(user.getId(), token, source);
 			BaseResponseItem<User> result = new BaseResponseItem<User>(
 					ResponseStatus.OK, "登录成功！");

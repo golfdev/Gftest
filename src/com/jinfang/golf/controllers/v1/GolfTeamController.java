@@ -11,6 +11,7 @@ import net.paoding.rose.web.annotation.Param;
 import net.paoding.rose.web.annotation.Path;
 import net.paoding.rose.web.annotation.rest.Post;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -106,7 +107,7 @@ public class GolfTeamController {
 									ResponseStatus.SERVER_ERROR, "球队id为空！"));
 		}
 		GolfTeam team = userTeamHome.getGolfTeamById(id);
-
+		
 		team.setLogo(GolfConstant.IMAGE_DOMAIN + team.getLogo());
 		BaseResponseItem<GolfTeam> result = new BaseResponseItem<GolfTeam>(
 				ResponseStatus.OK, "返回球队信息！");
@@ -165,7 +166,7 @@ public class GolfTeamController {
 		String path = processTeamLogo(logo);
 
 		BaseResponseItem<String> result = new BaseResponseItem<String>(
-				ResponseStatus.OK, "返回用户信息！");
+				ResponseStatus.OK, "返回logo信息！");
 		Type type = new TypeToken<BaseResponseItem<String>>() {
 		}.getType();
 		result.setData(path);
@@ -378,7 +379,11 @@ public class GolfTeamController {
 
 		if (userList != null) {
 			for (User user : userList) {
-				user.setHeadUrl(GolfConstant.IMAGE_DOMAIN + user.getHeadUrl());
+				if(StringUtils.isNotBlank(user.getHeadUrl())){
+					user.setHeadUrl(GolfConstant.IMAGE_DOMAIN + user.getHeadUrl());
+				}else{
+					user.setHeadUrl(GolfConstant.IMAGE_DOMAIN +GolfConstant.DEFAULT_HEAD_URL);
+				}
 			}
 		}
 
