@@ -1,6 +1,7 @@
 package com.jinfang.golf.controllers.v1;
 
 import java.lang.reflect.Type;
+import java.util.List;
 
 import net.paoding.rose.web.Invocation;
 import net.paoding.rose.web.annotation.Param;
@@ -16,7 +17,9 @@ import com.jinfang.golf.api.utils.BeanJsonUtils;
 import com.jinfang.golf.constants.ResponseStatus;
 import com.jinfang.golf.interceptor.LoginRequired;
 import com.jinfang.golf.relation.home.UserRelationHome;
-import com.jinfang.golf.relation.model.UserRelation;
+import com.jinfang.golf.relation.model.UserFollowRelation;
+import com.jinfang.golf.user.home.UserHome;
+import com.jinfang.golf.user.model.User;
 import com.jinfang.golf.utils.UserHolder;
 
 @LoginRequired
@@ -28,6 +31,9 @@ public class UserRelationController {
 
 	@Autowired
 	private UserRelationHome userRelationHome;
+	
+	@Autowired
+	private UserHome userHome;
 
 	@Autowired
 	private UserHolder userHolder;
@@ -49,9 +55,9 @@ public class UserRelationController {
 									ResponseStatus.SERVER_ERROR, "用户id为空！"));
 		}
 
-		UserRelation relation = new UserRelation();
-		relation.setFromUid(userHolder.getUserInfo().getId());
-		relation.setToUid(userId);
+		UserFollowRelation relation = new UserFollowRelation();
+		relation.setHost(userHolder.getUserInfo().getId());
+		relation.setGuest(userId);
 
 		userRelationHome.addRelation(relation);
 
@@ -90,5 +96,59 @@ public class UserRelationController {
 		return "@" + BeanJsonUtils.convertToJson(result, type);
 
 	}
+	
+	@Post("followList")
+	public String followList(@Param("offset") Integer offset, @Param("limit") Integer limit) throws Exception {
+
+
+		List<Integer> userIdList = userRelationHome.getFollowList(userHolder.getUserInfo().getId(),offset,limit);
+
+		List<User> userList = userHome.getUserListByIds(userIdList);
+		BaseResponseItem<List<User>> result = new BaseResponseItem<List<User>>(
+				ResponseStatus.OK, "成功！");
+		Type listType = new TypeToken<BaseResponseItem<List<User>>>() {
+		}.getType();
+		result.setData(userList);
+		return "@"
+				+ BeanJsonUtils.convertToJsonWithGsonBuilder(result, listType);
+
+	}
+	
+	
+	@Post("fansList")
+	public String fansList(@Param("offset") Integer offset, @Param("limit") Integer limit) throws Exception {
+
+
+		List<Integer> userIdList = userRelationHome.getFansList(userHolder.getUserInfo().getId(),offset,limit);
+
+		List<User> userList = userHome.getUserListByIds(userIdList);
+		BaseResponseItem<List<User>> result = new BaseResponseItem<List<User>>(
+				ResponseStatus.OK, "成功！");
+		Type listType = new TypeToken<BaseResponseItem<List<User>>>() {
+		}.getType();
+		result.setData(userList);
+		return "@"
+				+ BeanJsonUtils.convertToJsonWithGsonBuilder(result, listType);
+
+	}
+	
+	@Post("friendList")
+	public String friendList(@Param("offset") Integer offset, @Param("limit") Integer limit) throws Exception {
+
+
+		List<Integer> userIdList = userRelationHome.getFriendList(userHolder.getUserInfo().getId(),offset,limit);
+
+		List<User> userList = userHome.getUserListByIds(userIdList);
+		BaseResponseItem<List<User>> result = new BaseResponseItem<List<User>>(
+				ResponseStatus.OK, "成功！");
+		Type listType = new TypeToken<BaseResponseItem<List<User>>>() {
+		}.getType();
+		result.setData(userList);
+		return "@"
+				+ BeanJsonUtils.convertToJsonWithGsonBuilder(result, listType);
+
+	}
+	 
+	 
 
 }
