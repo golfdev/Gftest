@@ -17,41 +17,34 @@ import com.jinfang.golf.utils.UserHolder;
 
 @Component
 @Interceptor(oncePerRequest = true)
-public class LoginRequiredInterceptor extends ControllerInterceptorAdapter {
+public class CentifyRequiredInterceptor extends ControllerInterceptorAdapter {
 
-	private Log logger = LogFactory.getLog(LoginRequiredInterceptor.class);
+	private Log logger = LogFactory.getLog(CentifyRequiredInterceptor.class);
 
 	@Autowired
 	private UserHolder userHolder;
 
 	@Override
 	public Class<? extends Annotation> getRequiredAnnotationClass() {
-		return LoginRequired.class;
+		return CentifyRequired.class;
 	}
+	
+	public int getPriority() {
+        return 100;
+    }
 
 	@Override
 	protected Object before(Invocation inv) throws Exception {
 
-		if (userHolder == null) {
-			logger.info("userHolder is null");
-		}
-
-		if (userHolder.getPassportTicket() == null) {
-			logger.info("userHolder.getPassportTicket is null");
-		}
-
-		if (userHolder == null || userHolder.getPassportTicket() == null|| userHolder.getUserInfo() == null) {
-			JsonUtil.printResult(inv, ResponseStatus.NOT_LOGIN,
-					"not login", null);
+		
+		if (userHolder.getUserInfo().getStatus() != 1) {
+			JsonUtil.printResult(inv, ResponseStatus.NO_AUTH,
+					"未认证用户不能操作!", null);
 
 			return false;
 		}
 
 		return true;
 	}
-	
-	public int getPriority() {
-        return 200;
-    }
 
 }

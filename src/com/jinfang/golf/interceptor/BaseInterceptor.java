@@ -3,6 +3,8 @@
  */
 package com.jinfang.golf.interceptor;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -22,8 +24,6 @@ import org.perf4j.log4j.Log4JStopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.jinfang.golf.api.exception.GolfException;
-import com.jinfang.golf.api.utils.BeanJsonUtils;
 import com.jinfang.golf.api.utils.JsonUtil;
 import com.jinfang.golf.constants.GolfConstant;
 import com.jinfang.golf.constants.ResponseStatus;
@@ -55,15 +55,15 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
 
         String appKey = inv.getRequest().getHeader("appKey");
         logger.info("appKey:" + inv.getRequest().getHeader("appKey"));
-        if (!StringUtils.equals(appKey, GolfConstant.APPKEY_VALUE)) {
+        if (!(StringUtils.equals(appKey, GolfConstant.APPKEY_ANDROID_VALUE)||StringUtils.equals(appKey, GolfConstant.APPKEY_IOS_VALUE))) {
             JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "appKey error", null);
             return false;
         }
         
-        if(!validateSign(inv)){
-        	JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "参数非法！", null);
-            return false;
-        }
+//        if(!validateSign(inv)){
+//        	JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "参数非法！", null);
+//            return false;
+//        }
 
         stopWatchs.set(new Log4JStopWatch());
         String token = inv.getParameter("token");
@@ -71,7 +71,7 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
         PassportTicket passportTicket = passport.readInToken(token);
         if (passportTicket != null) {
             logger.info("init the user holder");
-            initUserHolder(inv, passportTicket);
+            initUserHolder(inv, passportTicket,token);
         }
         return true;
 
@@ -88,10 +88,12 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
         userHolder.clean();
     }
 
-    private void initUserHolder(Invocation inv, PassportTicket passportTicket) {
-        userHolder.setPassportTicket(passportTicket);
+    private void initUserHolder(Invocation inv, PassportTicket passportTicket,String token) {
         User user = userHome.getById(passportTicket.getUserId());
-        userHolder.setUserInfo(user);
+        if(token.equals(user.getToken())){
+            userHolder.setPassportTicket(passportTicket);
+            userHolder.setUserInfo(user);
+        }        
     }
     
     
@@ -147,11 +149,25 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
             result.append(Integer.toHexString((b & 0xf0) >>> 4));
             result.append(Integer.toHexString(b & 0x0f));
         }
+//        logger.info("sign="+result.toString());
         return result.toString();
     }
     
+    public int getPriority() {
+        return 300;
+    }
+    
     public static void main(String[] args){
-    	System.out.println(getSignature("device=18911082161phone=18911082167pwd=123userName=dfs","golf_jf_security"));
+    	System.out.println(getSignature("identity=15810738821pwd=123456","golf_jf_security"));
+    	
+//    	try {
+//			System.out.println(URLEncoder.encode("你好", "utf-8"));
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//   
+    	
     }
 
 }

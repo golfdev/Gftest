@@ -11,7 +11,7 @@ http://www.springframework.org/schema/context/spring-context-2.5.xsd
 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
-    <!-- 数据源 -->
+    <!-- 数据源 
  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
@@ -28,7 +28,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<property name="testWhileIdle" value="true" />
 		<property name="timeBetweenEvictionRunsMillis" value="14400000" />
 	</bean>
-	
+	-->
 	
 	<context:component-scan base-package="com.jinfang" 
 	    name-generator="org.springframework.context.annotation.AnnotationBeanNameGenerator"></context:component-scan>

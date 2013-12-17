@@ -18,7 +18,7 @@ import com.jinfang.golf.constants.ResponseStatus;
 public class BeanJsonUtils {
     private static Gson gson = new Gson();
     
-    private static Gson gsonBulider = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    private static Gson gsonBulider = new GsonBuilder().serializeNulls().excludeFieldsWithoutExposeAnnotation().create();
 
     @SuppressWarnings("unchecked")
     public static <T> T convertToObject(String string, Class<T> clazz) {
