@@ -21,7 +21,6 @@ import com.jinfang.golf.api.utils.BaseResponseItem;
 import com.jinfang.golf.api.utils.BeanJsonUtils;
 import com.jinfang.golf.constants.GolfConstant;
 import com.jinfang.golf.constants.ResponseStatus;
-import com.jinfang.golf.interceptor.CentifyRequired;
 import com.jinfang.golf.interceptor.LoginRequired;
 import com.jinfang.golf.team.home.UserTeamHome;
 import com.jinfang.golf.team.model.GolfTeam;
@@ -59,7 +58,6 @@ public class GolfTeamController {
 	 * @throws Exception
 	 */
 	@LoginRequired
-	@CentifyRequired
 	@Post("create")
 	public String createTeam(@Param("name") String name,
 			@Param("city") String city, @Param("logo") String logo,
@@ -158,7 +156,6 @@ public class GolfTeamController {
 	 * @throws Exception
 	 */
 	@LoginRequired
-	@CentifyRequired
 	@Post("uploadPhoto")
 	public String uploadPhoto(@Param("logo") MultipartFile logo)
 			throws Exception {
@@ -188,7 +185,6 @@ public class GolfTeamController {
 	 * @throws Exception
 	 */
 	@LoginRequired
-	@CentifyRequired
 	@Post("edit")
 	public String edit(@Param("id") Integer id, @Param("name") String name,
 			@Param("city") String city, @Param("logo") String logo,
@@ -223,7 +219,6 @@ public class GolfTeamController {
 	 * @throws Exception
 	 */
 	@LoginRequired
-	@CentifyRequired
 	@Post("editNotice")
 	public String editNotice(@Param("id") Integer id,
 			@Param("notice") String notice) throws Exception {

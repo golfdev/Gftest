@@ -66,7 +66,7 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
 //        }
 
         stopWatchs.set(new Log4JStopWatch());
-        String token = inv.getParameter("token");
+        String token = inv.getRequest().getParameter("token");
         logger.info("token:" + token);
         PassportTicket passportTicket = passport.readInToken(token);
         if (passportTicket != null) {
