@@ -8,12 +8,14 @@ import net.paoding.rose.web.annotation.Param;
 import net.paoding.rose.web.annotation.Path;
 import net.paoding.rose.web.annotation.rest.Post;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.reflect.TypeToken;
 import com.jinfang.golf.api.exception.GolfException;
 import com.jinfang.golf.api.utils.BaseResponseItem;
 import com.jinfang.golf.api.utils.BeanJsonUtils;
+import com.jinfang.golf.constants.GolfConstant;
 import com.jinfang.golf.constants.ResponseStatus;
 import com.jinfang.golf.interceptor.LoginRequired;
 import com.jinfang.golf.relation.home.UserRelationHome;
@@ -100,10 +102,21 @@ public class UserRelationController {
 	@Post("followList")
 	public String followList(@Param("offset") Integer offset, @Param("limit") Integer limit) throws Exception {
 
-
+		offset = offset*limit;
 		List<Integer> userIdList = userRelationHome.getFollowList(userHolder.getUserInfo().getId(),offset,limit);
 
 		List<User> userList = userHome.getUserListByIds(userIdList);
+		
+		if (userList != null) {
+			for (User temp : userList) {
+				if(StringUtils.isNotBlank(temp.getHeadUrl())){
+					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN + temp.getHeadUrl());
+				}else{
+					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN +GolfConstant.DEFAULT_HEAD_URL);
+				}
+				
+			}
+		}
 		BaseResponseItem<List<User>> result = new BaseResponseItem<List<User>>(
 				ResponseStatus.OK, "成功！");
 		Type listType = new TypeToken<BaseResponseItem<List<User>>>() {
@@ -118,10 +131,20 @@ public class UserRelationController {
 	@Post("fansList")
 	public String fansList(@Param("offset") Integer offset, @Param("limit") Integer limit) throws Exception {
 
-
+		offset = offset*limit;
 		List<Integer> userIdList = userRelationHome.getFansList(userHolder.getUserInfo().getId(),offset,limit);
 
 		List<User> userList = userHome.getUserListByIds(userIdList);
+		if (userList != null) {
+			for (User temp : userList) {
+				if(StringUtils.isNotBlank(temp.getHeadUrl())){
+					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN + temp.getHeadUrl());
+				}else{
+					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN +GolfConstant.DEFAULT_HEAD_URL);
+				}
+				
+			}
+		}
 		BaseResponseItem<List<User>> result = new BaseResponseItem<List<User>>(
 				ResponseStatus.OK, "成功！");
 		Type listType = new TypeToken<BaseResponseItem<List<User>>>() {
@@ -135,10 +158,21 @@ public class UserRelationController {
 	@Post("friendList")
 	public String friendList(@Param("offset") Integer offset, @Param("limit") Integer limit) throws Exception {
 
-
+		offset = offset*limit;
 		List<Integer> userIdList = userRelationHome.getFriendList(userHolder.getUserInfo().getId(),offset,limit);
 
 		List<User> userList = userHome.getUserListByIds(userIdList);
+		
+		if (userList != null) {
+			for (User temp : userList) {
+				if(StringUtils.isNotBlank(temp.getHeadUrl())){
+					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN + temp.getHeadUrl());
+				}else{
+					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN +GolfConstant.DEFAULT_HEAD_URL);
+				}
+				
+			}
+		}
 		BaseResponseItem<List<User>> result = new BaseResponseItem<List<User>>(
 				ResponseStatus.OK, "成功！");
 		Type listType = new TypeToken<BaseResponseItem<List<User>>>() {
