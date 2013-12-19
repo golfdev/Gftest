@@ -180,7 +180,7 @@ public class UserRegController {
 				} else {
 					user.setStatus(0);
 				}
-
+				user.setCity("北京");
 				user.setHeadUrl(GolfConstant.DEFAULT_HEAD_URL);
 				Integer userId = userHome.save(user);
 

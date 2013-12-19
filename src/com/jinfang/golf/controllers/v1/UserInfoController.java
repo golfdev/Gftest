@@ -2,7 +2,9 @@ package com.jinfang.golf.controllers.v1;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import net.paoding.rose.web.Invocation;
 import net.paoding.rose.web.annotation.Param;
@@ -11,6 +13,7 @@ import net.paoding.rose.web.annotation.rest.Post;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.reflect.TypeToken;
@@ -94,6 +97,8 @@ public class UserInfoController {
 				user.setSfzId(centify.getSfzId());
 			}
 		}
+		
+	    user.setIsFollowed(userRelationHome.isFollow(host.getId(), id));
 
 		BaseResponseItem<User> result = new BaseResponseItem<User>(
 				ResponseStatus.OK, "返回用户信息！");
@@ -199,20 +204,38 @@ public class UserInfoController {
 	 * @throws Exception
 	 */
 	@Post("list")
-	public String list(@Param("type") Integer type,
+	public String list(@Param("type") Integer type,@Param("city") String city,
 			@Param("offset") Integer offset, @Param("limit") Integer limit)
 			throws Exception {
 
 		User user = userHolder.getUserInfo();
 		List<User> userList = null;
+		
+		if(offset==null){
+			offset=0;
+		}
 
 		offset = offset * limit;
+		
+		if(type==null){
+			type=1;
+		}
 
 		if (type == 0) {
 			userList = userHome.getAllUserList(offset, limit);
 		} else if (type == 1) {
-			String city = user.getCity();
-			userList = userHome.getAllUserListByCity(offset, limit, city);
+			if(StringUtils.isEmpty(city)){
+				city = user.getCity();
+			}
+			if(user.getStatus()!=null&&user.getStatus()==1){
+				userList = userHome.getAllUserListByCity(offset, limit, city);
+			}else{
+				userList = userHome.getAllUserListByCityAndStatus(offset, limit, city,0);
+			}
+			
+			if(CollectionUtils.isEmpty(userList)){
+				userList = userHome.getAllUserList(offset, limit);
+			}
 		} else if (type == 2) {
 
 		} else if (type == 3) {
@@ -222,18 +245,25 @@ public class UserInfoController {
 		}
 
 		if (userList != null) {
+			List<Integer> uidList = new ArrayList<Integer>();
 			for (User temp : userList) {
 				if(StringUtils.isNotBlank(temp.getHeadUrl())){
 					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN + temp.getHeadUrl());
 				}else{
 					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN +GolfConstant.DEFAULT_HEAD_URL);
 				}
-				
+				uidList.add(temp.getId());
 			}
+			Map<Integer, Integer> isFollowMap = userRelationHome.isFollowBatch(user.getId(), uidList);
+			
+			for (User temp : userList) {
+				temp.setIsFollowed(isFollowMap.get(temp.getId()));
+			}
+			
 		}
 
 		BaseResponseItem<List<User>> result = new BaseResponseItem<List<User>>(
-				ResponseStatus.OK, "上传图片成功！");
+				ResponseStatus.OK, "成功！");
 		Type listType = new TypeToken<BaseResponseItem<List<User>>>() {
 		}.getType();
 		result.setData(userList);
