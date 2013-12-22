@@ -27,6 +27,7 @@ import com.jinfang.golf.user.model.User;
 import com.jinfang.golf.user.model.UserCentify;
 import com.jinfang.golf.user.model.VerifyCode;
 import com.jinfang.golf.utils.FormatCheckUtil;
+import com.jinfang.golf.utils.Md5;
 
 @Path("user")
 public class UserRegController {
@@ -197,6 +198,91 @@ public class UserRegController {
 
 				// 保存设备号
 				userHome.saveUserDevice(userId, device);
+				// }
+				String token = passport.createAppToken(userId,
+						Integer.MAX_VALUE);
+				user.setToken(token);
+				user.setHeadUrl(GolfConstant.IMAGE_DOMAIN + user.getHeadUrl());
+
+				// 更新登录token
+				String appKey = inv.getRequest().getHeader("appKey");
+				String source = DeviceType.ANDROID.getType();
+				if (StringUtils.equals(appKey, GolfConstant.APPKEY_IOS_VALUE)) {
+					source = DeviceType.IOS.getType();
+				}
+
+				userHome.updateTokenAndSource(userId, token, source);
+				BaseResponseItem<User> result = new BaseResponseItem<User>(
+						ResponseStatus.OK, "注册成功！");
+				Type type = new TypeToken<BaseResponseItem<User>>() {
+				}.getType();
+				result.setData(user);
+				return "@"
+						+ BeanJsonUtils.convertToJsonWithGsonBuilder(result,
+								type);
+
+			}
+		}
+
+		BaseResponseItem<String> result = new BaseResponseItem<String>(
+				ResponseStatus.OK, "注册成功！");
+		Type type = new TypeToken<BaseResponseItem<String>>() {
+		}.getType();
+		return "@" + BeanJsonUtils.convertToJson(result, type);
+
+	}
+	
+	
+	/**
+	 * 匿名注册
+	 * 
+	 * @param phone
+	 * @param userName
+	 * @param email
+	 * @param passWord
+	 * @return
+	 * @throws Exception
+	 */
+	@Post("anoRegister")
+	public String anonymous(@Param("phone") String phone,
+			@Param("userName") String userName) throws Exception {
+
+		if (StringUtils.isBlank(userName)) {
+			return "@"
+					+ BeanJsonUtils
+							.convertToJsonWithException(new GolfException(
+									ResponseStatus.SERVER_ERROR, "请输入用户名！"));
+		}
+
+		User user = null;
+
+		// 手机号注册
+		if (StringUtils.isNotBlank(phone)) {
+			user = userHome.getByPhone(phone);
+			if (user != null) {
+				return "@"
+						+ BeanJsonUtils
+								.convertToJsonWithException(new GolfException(
+										ResponseStatus.SERVER_ERROR,
+										"该手机号已经被注册！"));
+			} else {
+				// user = userHome.getByDevice(device);
+				// if (user != null&&user.getStatus()==0) {
+				// user.setPhone(phone);
+				// user.setPassWord(passWord);
+				// user.setUserName(userName);
+				// user.setStatus(1);
+				// userHome.updateForReg(user);
+				// } else {
+				user = new User();
+				user.setPhone(phone);
+				user.setPassWord(Md5.md5s("123456"));
+				user.setUserName(userName);
+			    user.setStatus(0);
+				user.setCity("北京");
+				user.setHeadUrl(GolfConstant.DEFAULT_HEAD_URL);
+				Integer userId = userHome.save(user);
+
 				// }
 				String token = passport.createAppToken(userId,
 						Integer.MAX_VALUE);
