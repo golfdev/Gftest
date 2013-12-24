@@ -24,6 +24,7 @@ import com.jinfang.golf.constants.ResponseStatus;
 import com.jinfang.golf.interceptor.LoginRequired;
 import com.jinfang.golf.team.home.UserTeamHome;
 import com.jinfang.golf.team.model.GolfTeam;
+import com.jinfang.golf.team.model.UserTeamApply;
 import com.jinfang.golf.user.home.UserHome;
 import com.jinfang.golf.user.model.User;
 import com.jinfang.golf.utils.MathUtil;
@@ -117,9 +118,8 @@ public class GolfTeamController {
 	}
 
 	/**
-	 * 返回球队基本信息
-	 * 
-	 * @param id
+	 * 球队入队申请
+	 * @param teamId
 	 * @return
 	 * @throws Exception
 	 */
@@ -133,15 +133,72 @@ public class GolfTeamController {
 									ResponseStatus.SERVER_ERROR, "球队id为空！"));
 		}
 
-		// User host = userHolder.getUserInfo();
-		// UserTeamApply apply = new UserTeamApply();
-		// apply.setUserId(host.getId());
-		// apply.setTeamId(teamId);
-		// apply.setStatus(0);
-		// userTeamHome.addApply(apply);
+		 User host = userHolder.getUserInfo();
+		 UserTeamApply apply = new UserTeamApply();
+		 apply.setUserId(host.getId());
+		 apply.setTeamId(teamId);
+		 apply.setStatus(0);
+		 userTeamHome.addApply(apply);
 
 		BaseResponseItem<String> result = new BaseResponseItem<String>(
 				ResponseStatus.OK, "发送成功！");
+		Type type = new TypeToken<BaseResponseItem<String>>() {
+		}.getType();
+		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+
+	}
+	
+	/**
+	 * 球队申请列表
+	 * @param teamId
+	 * @param offset
+	 * @param limit
+	 * @return
+	 * @throws Exception
+	 */
+	@Post("applyList")
+	public String applyList(@Param("teamId") Integer teamId,@Param("offset") Integer offset,@Param("limit") Integer limit) throws Exception {
+
+		if (teamId == null || teamId == 0) {
+			return "@"
+					+ BeanJsonUtils
+							.convertToJsonWithException(new GolfException(
+									ResponseStatus.SERVER_ERROR, "球队id为空！"));
+		}
+
+		List<UserTeamApply> applyList =  userTeamHome.getTeamApplyList(teamId,offset,limit);
+
+		BaseResponseItem<List<UserTeamApply>> result = new BaseResponseItem<List<UserTeamApply>>(
+				ResponseStatus.OK, "发送成功！");
+		Type type = new TypeToken<BaseResponseItem<List<UserTeamApply>>>() {
+		}.getType();
+		result.setData(applyList);
+		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+
+	}
+	
+	/**
+	 * 处理球队申请
+	 * @param teamId
+	 * @param userId
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 */
+	@Post("apply/handle")
+	public String applyHandle(@Param("teamId") Integer teamId,@Param("userId") Integer userId,@Param("status") Integer status) throws Exception {
+
+		if (teamId == null || userId == null||status==null) {
+			return "@"
+					+ BeanJsonUtils
+							.convertToJsonWithException(new GolfException(
+									ResponseStatus.SERVER_ERROR, "参数非法！"));
+		}
+		
+		userTeamHome.updateApplyStatus(teamId, userId, status);
+
+		BaseResponseItem<String> result = new BaseResponseItem<String>(
+				ResponseStatus.OK, "处理成功！");
 		Type type = new TypeToken<BaseResponseItem<String>>() {
 		}.getType();
 		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
