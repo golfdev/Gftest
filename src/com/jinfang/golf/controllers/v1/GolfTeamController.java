@@ -66,6 +66,13 @@ public class GolfTeamController {
 			@Param("purpose") String purpose,
 			@Param("description") String description,
 			@Param("createdDate") String createdDate) throws Exception {
+		
+		if(StringUtils.isEmpty(createdDate)){
+			return "@"
+					+ BeanJsonUtils
+							.convertToJsonWithException(new GolfException(
+									ResponseStatus.SERVER_ERROR, "球队创建日期为空！"));
+		}
 
 		GolfTeam team = new GolfTeam();
 		team.setName(name);

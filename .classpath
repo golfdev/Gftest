@@ -54,7 +54,6 @@
 	<classpathentry kind="lib" path="/Gf-core/lib/servlet-api-2.4.jar"/>
 	<classpathentry kind="lib" path="/Gf-core/lib/slf4j-api-1.6.6.jar"/>
 	<classpathentry kind="lib" path="/Gf-core/lib/slf4j-log4j12-1.6.6.jar"/>
-	<classpathentry kind="lib" path="/Gf-core/lib/solr-solrj-4.6.0.jar"/>
 	<classpathentry kind="lib" path="/Gf-core/lib/spring-2.5.6.SEC01.jar"/>
 	<classpathentry kind="lib" path="/Gf-core/lib/spring-beans-2.5.6.SEC01.jar"/>
 	<classpathentry kind="lib" path="/Gf-core/lib/spring-context-2.5.6.SEC01.jar"/>
@@ -70,5 +69,6 @@
 	<classpathentry kind="lib" path="/Gf-core/lib/wstx-asl-3.2.7.jar"/>
 	<classpathentry kind="lib" path="/Gf-core/lib/xpp3-1.1.4c.jar"/>
 	<classpathentry kind="lib" path="/Gf-core/lib/zookeeper-3.4.5.jar"/>
+	<classpathentry kind="lib" path="/Gf-core/lib/solr-solrj-4.5.1.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>
