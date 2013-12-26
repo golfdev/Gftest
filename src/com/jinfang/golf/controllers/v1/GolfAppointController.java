@@ -144,9 +144,16 @@ public class GolfAppointController {
 	}
 
 	/**
-	 * 约球申请入住
-	 * 
-	 * @param appointId
+	 * 发起约球
+	 * @param clubId
+	 * @param appointTime
+	 * @param avgPrice
+	 * @param gender
+	 * @param minHandicap
+	 * @param maxHandicap
+	 * @param privateSetting
+	 * @param description
+	 * @param city
 	 * @return
 	 * @throws Exception
 	 */
@@ -173,7 +180,7 @@ public class GolfAppointController {
 		}
 
 		if (gender == null) {
-			gender = 0;
+			gender = 2;
 		}
 		if (minHandicap == null) {
 			minHandicap = 0;
