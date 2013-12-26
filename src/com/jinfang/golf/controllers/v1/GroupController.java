@@ -208,4 +208,16 @@ public class GroupController {
 		result.setData(list);
 		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 	}
+	@Post("delete")
+	public String delete(@Param("groupId") int groupId) throws Exception {
+		if (groupId <= 0) {
+			return "@" + BeanJsonUtils.convertToJsonWithException(new GolfException(ResponseStatus.SERVER_ERROR,"缺少groupId"));
+		}
+		int userId = userHolder.getUserInfo().getId();
+		groupManager.updateUserGroupStatus(userId, groupId, UserGroup.STATUS_HIDE);
+		BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK, "删除微群成功!");
+		Type type = new TypeToken<BaseResponseItem<String>>() {}.getType();
+	    
+	    return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+	}
 }
