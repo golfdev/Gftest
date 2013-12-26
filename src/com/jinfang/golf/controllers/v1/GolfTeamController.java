@@ -457,21 +457,34 @@ public class GolfTeamController {
 	}
 
 	/**
-	 * 成员列表
-	 * 
-	 * @param offset
-	 * @param limit
+	 * 邀请某人加入球队
+	 * @param userId
+	 * @param teamId
 	 * @return
 	 * @throws Exception
 	 */
 	@Post("invite")
-	public String invite(@Param("userId") Integer userId) throws Exception {
+	public String invite(@Param("userId") Integer userId,@Param("teamId") Integer teamId) throws Exception {
 
-		BaseResponseItem<String> result = new BaseResponseItem<String>(
-				ResponseStatus.OK, "邀请成功！");
-		Type type = new TypeToken<BaseResponseItem<String>>() {
-		}.getType();
-		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+	    GolfTeam team = userTeamHome.getGolfTeamById(teamId);
+        User host = userHolder.getUserInfo();
+        if (team.getCreatorId().equals(host.getId())) {
+            userTeamHome.addMember(teamId,userId);
+        } else {
+            BaseResponseItem<String> result = new BaseResponseItem<String>(
+                    ResponseStatus.SERVER_ERROR, "无权限！");
+            Type type = new TypeToken<BaseResponseItem<String>>() {
+            }.getType();
+            return "@"
+                    + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+
+        }
+
+        BaseResponseItem<String> result = new BaseResponseItem<String>(
+                ResponseStatus.OK, "移除成功！");
+        Type type = new TypeToken<BaseResponseItem<String>>() {
+        }.getType();
+        return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 
 	}
 
