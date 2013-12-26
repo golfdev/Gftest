@@ -211,6 +211,35 @@ public class GolfTeamController {
 		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 
 	}
+	
+	/**
+     * 处理球队申请
+     * @param teamId
+     * @param userId
+     * @param status
+     * @return
+     * @throws Exception
+     */
+    @Post("apply/agreeAll")
+    public String agreeAll(@Param("teamId") Integer teamId,@Param("userIds") List<Integer> userIds) throws Exception {
+
+        if (teamId == null || userIds == null) {
+            return "@"
+                    + BeanJsonUtils
+                            .convertToJsonWithException(new GolfException(
+                                    ResponseStatus.SERVER_ERROR, "参数非法！"));
+        }
+        for(Integer userId:userIds){
+            userTeamHome.updateApplyStatus(teamId, userId, 1);
+        }
+       
+        BaseResponseItem<String> result = new BaseResponseItem<String>(
+                ResponseStatus.OK, "处理成功！");
+        Type type = new TypeToken<BaseResponseItem<String>>() {
+        }.getType();
+        return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+
+    }
 
 	/**
 	 * 上传球队logo
