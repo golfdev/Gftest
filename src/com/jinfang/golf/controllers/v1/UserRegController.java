@@ -190,7 +190,7 @@ public class UserRegController {
 						&& StringUtils.isNotBlank(sfzId)) {
 
 					UserCentify centify = new UserCentify();
-					centify.setUserId(user.getId());
+					centify.setUserId(userId);
 					centify.setRealName(realName);
 					centify.setSfzId(sfzId);
 					userHome.saveCentifyInfo(centify);
