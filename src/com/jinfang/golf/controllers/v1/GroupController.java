@@ -59,7 +59,7 @@ public class GroupController {
 				set.add(Integer.parseInt(id));
 			}
 		}
-		Group group = groupManager.createGroup(userId, name, set, Group.TYPE_TEAM);
+		Group group = groupManager.createGroup(userId, name, set, Group.TYPE_NORMAL);
 		BaseResponseItem<Group> result = new BaseResponseItem<Group>(ResponseStatus.OK, "微群创建成功!");
 		Type type = new TypeToken<BaseResponseItem<Group>>() {}.getType();
 		result.setData(group);
@@ -76,6 +76,9 @@ public class GroupController {
 			set.add(Integer.parseInt(id));
 		}
 		groupManager.addUser(groupId, set);
+		// 如果是两人的微群，就删除存储，以后重新生成ID
+		// TODO 这儿存在一个Bug: 重复添加两人中的一人，就会造成误删。留着以后解决吧
+		groupManager.delIfTwoUserGroup(groupId);
 		BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK, "添加用户成功!");
 		Type type = new TypeToken<BaseResponseItem<String>>() {}.getType();
 	    
