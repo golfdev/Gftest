@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -136,11 +137,9 @@ public class GroupController {
 		Comparator<Group> comparator = new Comparator<Group>() {
 			@Override
 			public int compare(Group group1, Group group2) {
-				if (group1.getLastTime() != null && group2.getLastTime() != null) {
-					return (int)(group1.getLastTime().getTime() - group2.getLastTime().getTime());
-				} else {
-					return (int)(group1.getTime().getTime() - group2.getTime().getTime());
-				}
+				Date time1 = group1.getLastTime() != null ? group1.getLastTime() : group1.getTime();
+				Date time2 = group2.getLastTime() != null ? group2.getLastTime() : group2.getTime();
+				return (int)(time2.getTime() - time1.getTime());
 			}
 		};
 		Collections.sort(list, comparator);
@@ -222,5 +221,14 @@ public class GroupController {
 		Type type = new TypeToken<BaseResponseItem<String>>() {}.getType();
 	    
 	    return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+	}
+	public static void main(String[] args) {
+		List<Group> list = new ArrayList<Group>();
+		Group g1 = new Group(); g1.setTime(new Date()); list.add(g1);
+		Group g2 = new Group(); g2.setTime(new Date(System.currentTimeMillis()+1000)); list.add(g2);
+		new GroupController().sortGroupList(list);
+		for (Group group : list) {
+			System.out.println(group.getTime());
+		}
 	}
 }
