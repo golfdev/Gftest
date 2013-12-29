@@ -133,7 +133,7 @@ public class GroupController {
 		Comparator<Group> comparator = new Comparator<Group>() {
 			@Override
 			public int compare(Group group1, Group group2) {
-				if (group1.getLastTime() != null && group2.getLastText() != null) {
+				if (group1.getLastTime() != null && group2.getLastTime() != null) {
 					return (int)(group1.getLastTime().getTime() - group2.getLastTime().getTime());
 				} else {
 					return (int)(group1.getTime().getTime() - group2.getTime().getTime());
