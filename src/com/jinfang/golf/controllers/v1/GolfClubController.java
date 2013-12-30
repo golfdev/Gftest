@@ -24,6 +24,7 @@ import com.jinfang.golf.club.home.GolfClubHome;
 import com.jinfang.golf.club.model.GolfClub;
 import com.jinfang.golf.club.model.GolfClubOrder;
 import com.jinfang.golf.club.model.GolfClubWayItem;
+import com.jinfang.golf.club.model.GolfClubYard;
 import com.jinfang.golf.constants.GolfConstant;
 import com.jinfang.golf.constants.ResponseStatus;
 import com.jinfang.golf.interceptor.LoginRequired;
@@ -284,6 +285,23 @@ public class GolfClubController {
 		result.setData(clubList);
 		return "@"
 				+ BeanJsonUtils.convertToJsonWithGsonBuilder(result, listType);
+
+	}
+	
+	@Post("parScoreList")
+	public String parScoreList(@Param("clubId") Integer clubId)
+			throws Exception {
+		
+
+		List<GolfClubYard> yardList = golfClubHome.getGolfClubYardList(clubId);
+
+		BaseResponseItem<List<GolfClubYard>> result = new BaseResponseItem<List<GolfClubYard>>(
+				ResponseStatus.OK, "成功！");
+		Type listType = new TypeToken<BaseResponseItem<List<GolfClubYard>>>() {
+		}.getType();
+		result.setData(yardList);
+		return "@"
+				+ BeanJsonUtils.convertToJson(result, listType);
 
 	}
 
