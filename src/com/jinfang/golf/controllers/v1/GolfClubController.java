@@ -274,7 +274,11 @@ public class GolfClubController {
 
 		if (clubList != null) {
 			for (GolfClub club : clubList) {
-				club.setLogo(GolfConstant.IMAGE_DOMAIN + club.getLogo());
+				if(StringUtils.isBlank(club.getLogo())){
+					club.setLogo(GolfConstant.IMAGE_DOMAIN + GolfConstant.DEFAULT_CLUB_LOGO_URL);
+				}else{
+					club.setLogo(GolfConstant.IMAGE_DOMAIN + club.getLogo());
+				}
 			}
 		}
 
