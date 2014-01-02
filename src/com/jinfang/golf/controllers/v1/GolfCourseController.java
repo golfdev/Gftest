@@ -107,10 +107,26 @@ public class GolfCourseController {
 		course.setPlayerList(coursePlayerList);
 		course.setCreatorId(userHolder.getUserInfo().getId());
 		golfCourseHome.saveCourse(course);
-		BaseResponseItem<String> result = new BaseResponseItem<String>(
+		
+		List<GolfClubYard> yardList = golfClubHome.getGolfClubYardList(course.getClubId());
+		
+		if(CollectionUtils.isEmpty(yardList)){
+			return "@"
+					+ BeanJsonUtils
+							.convertToJsonWithException(new GolfException(
+									ResponseStatus.SERVER_ERROR, "球场码数卡未上传！"));
+		}
+		
+		List<Integer> yardScoreList = new ArrayList<Integer>();
+		
+		for(GolfClubYard yard:yardList){
+			yardScoreList.add(yard.getParScore());
+		}
+		BaseResponseItem<List<Integer>> result = new BaseResponseItem<List<Integer>>(
 				ResponseStatus.OK, "成功！");
-		Type type = new TypeToken<BaseResponseItem<String>>() {
+		Type type = new TypeToken<BaseResponseItem<List<Integer>>>() {
 		}.getType();
+		result.setData(yardScoreList);
 		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 	}
 	
@@ -529,7 +545,6 @@ public class GolfCourseController {
 
 		for(GolfCourseHoleScore holeScore:holeScoreList){
 			List<Integer> holeTotalScore = null;
-			List<Integer> holePutterScore = null;
 			if(holeTotalScoreMap.containsKey(holeScore.getHoleNum())){
 				holeTotalScore = holeTotalScoreMap.get(holeScore.getHoleNum());
 				holeTotalScore.add(holeScore.getTotalScore());
@@ -666,7 +681,7 @@ public class GolfCourseController {
 			}
 			
 		}
-		
+		golfCourseHome.incViewCount(id);
 		result.put("parList", yardScoreList);
 		result.put("playerList", course.getPlayerList());
 //		result.put("holeScoreList", holeScoreList);
