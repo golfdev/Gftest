@@ -130,66 +130,33 @@ public class GolfCourseController {
 		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
 	}
 	
-//	
-//	/**
-//	 * 
-//	 * @param courseId
-//	 * @param isLive
-//	 * @return
-//	 * @throws Exception
-//	 */
-//	@Post("updateStatus")
-//	public String changeLiveStatus(@Param("courseId") Integer courseId,
-//			@Param("isLive") Integer isLive) throws Exception {
-//
-//		if (clubId == null || clubId == 0 || StringUtils.isBlank(playerIds)
-//				|| StringUtils.isBlank(playerNames)
-//				|| StringUtils.isBlank(teeNums) || isLive == null) {
-//			return "@"
-//					+ BeanJsonUtils
-//							.convertToJsonWithException(new GolfException(
-//									ResponseStatus.SERVER_ERROR, "参数非法！"));
-//		}
-//
-//		List<GolfCoursePlayer> coursePlayerList = new ArrayList<GolfCoursePlayer>();
-//
-//		String[] playerArray = playerIds.split("_");
-//		String[] nameArray = playerNames.split("_");
-//		String[] teeArray = teeNums.split("_");
-//
-//		if (playerArray.length != nameArray.length
-//				|| playerArray.length != teeArray.length) {
-//			return "@"
-//					+ BeanJsonUtils
-//							.convertToJsonWithException(new GolfException(
-//									ResponseStatus.SERVER_ERROR, "参数非法！"));
-//		}
-//
-//		int length = playerArray.length;
-//
-//		GolfCourse course = new GolfCourse();
-//		course.setClubId(clubId);
-//		course.setIsLive(isLive);
-//		for (int i = 0; i < length; i++) {
-//			GolfCoursePlayer coursePlayer = new GolfCoursePlayer();
-//			course.setIsLive(isLive);
-//			Integer playerId = NumberUtils.toInt(playerArray[i], 0);
-//			coursePlayer.setPlayerId(playerId);
-//			coursePlayer.setPlayerName(nameArray[i]);
-//			coursePlayer.setSerialNum(i + 1);
-//			Integer teeNum = NumberUtils.toInt(teeArray[i], 0);
-//			coursePlayer.setTeeNum(teeNum);
-//			coursePlayerList.add(coursePlayer);
-//		}
-//		course.setPlayerList(coursePlayerList);
-//		course.setCreatorId(userHolder.getUserInfo().getId());
-//		golfCourseHome.saveCourse(course);
-//		BaseResponseItem<String> result = new BaseResponseItem<String>(
-//				ResponseStatus.OK, "成功！");
-//		Type type = new TypeToken<BaseResponseItem<String>>() {
-//		}.getType();
-//		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
-//	}
+	
+	/**
+	 * 更改直播状态
+	 * @param courseId
+	 * @param isLive
+	 * @return
+	 * @throws Exception
+	 */
+	@Post("changeLiveStatus")
+	public String changeLiveStatus(@Param("courseId") Integer courseId,
+			@Param("isLive") Integer isLive) throws Exception {
+
+		if (courseId == null || courseId == 0 || isLive == null) {
+			return "@"
+					+ BeanJsonUtils
+							.convertToJsonWithException(new GolfException(
+									ResponseStatus.SERVER_ERROR, "参数非法！"));
+		}
+
+		
+		golfCourseHome.updateLiveStatus(courseId, isLive);
+		BaseResponseItem<String> result = new BaseResponseItem<String>(
+				ResponseStatus.OK, "成功！");
+		Type type = new TypeToken<BaseResponseItem<String>>() {
+		}.getType();
+		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+	}
 
 	@Post("holeScoring")
 	public String holeScoring(@Param("courseId") Integer courseId,
