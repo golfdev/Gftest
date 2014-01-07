@@ -144,11 +144,15 @@ public class UserRegController {
 			@Param("pwd") String passWord, @Param("realName") String realName,
 			@Param("sfzId") String sfzId) throws Exception {
 
-		if (StringUtils.isBlank(userName)) {
+		if (StringUtils.isBlank(userName)&&StringUtils.isBlank(realName)) {
 			return "@"
 					+ BeanJsonUtils
 							.convertToJsonWithException(new GolfException(
 									ResponseStatus.SERVER_ERROR, "请输入用户名！"));
+		}
+		
+		if(StringUtils.isBlank(userName)&&!StringUtils.isBlank(realName)){
+			userName=realName;
 		}
 
 		User user = null;

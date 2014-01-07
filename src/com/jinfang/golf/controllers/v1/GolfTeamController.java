@@ -281,6 +281,13 @@ public class GolfTeamController {
             throws Exception {
 
         GolfTeam team = userTeamHome.getGolfTeamById(id);
+        
+        if(team==null){
+        	 return "@"
+                     + BeanJsonUtils.convertToJsonWithException(new GolfException(
+                             ResponseStatus.SERVER_ERROR, "球队不存在！"));
+        }
+        
         team.setCity(city);
         team.setName(name);
         team.setLogo(logo);
