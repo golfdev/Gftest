@@ -227,14 +227,18 @@ public class UserInfoController {
 			if(StringUtils.isEmpty(city)){
 				city = user.getCity();
 			}
-			if(user.getStatus()!=null&&user.getStatus()==1){
-				userList = userHome.getAllUserListByCity(offset, limit, city);
-			}else{
-				userList = userHome.getAllUserListByCityAndStatus(offset, limit, city,0);
+			
+			if(StringUtils.isEmpty(city)){
+				city = "北京";
 			}
+//			if(user.getStatus()!=null&&user.getStatus()==1){
+//				userList = userHome.getAllUserListByCity(offset, limit, city);
+//			}else{
+//				userList = userHome.getAllUserListByCityAndStatus(offset, limit, city,0);
+//			}
 			
 			if(CollectionUtils.isEmpty(userList)){
-				userList = userHome.getAllUserList(offset, limit);
+				userList = userHome.getAllUserListByCity(offset, limit, city);
 			}
 		} else if (type == 2) {
 

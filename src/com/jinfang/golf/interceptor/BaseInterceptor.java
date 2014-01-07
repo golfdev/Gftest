@@ -3,12 +3,11 @@
  */
 package com.jinfang.golf.interceptor;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
@@ -36,138 +35,149 @@ import com.jinfang.golf.utils.UserHolder;
 @Component
 @Interceptor
 public class BaseInterceptor extends ControllerInterceptorAdapter {
-    
-    private Log logger = LogFactory.getLog(LoginRequiredInterceptor.class);
 
-    private ThreadLocal<StopWatch> stopWatchs = new ThreadLocal<StopWatch>();
+	private Log logger = LogFactory.getLog(LoginRequiredInterceptor.class);
 
-    @Autowired
-    private UserHolder userHolder;
+	private ThreadLocal<StopWatch> stopWatchs = new ThreadLocal<StopWatch>();
 
-    @Autowired
-    private Passport passport;
+	@Autowired
+	private UserHolder userHolder;
 
-    @Autowired
-    private UserHome userHome;
+	@Autowired
+	private Passport passport;
 
-    @Override
-    protected Object before(Invocation inv) throws Exception {
+	@Autowired
+	private UserHome userHome;
 
-        String appKey = inv.getRequest().getHeader("appKey");
-        logger.info("appKey:" + inv.getRequest().getHeader("appKey"));
-        if (!(StringUtils.equals(appKey, GolfConstant.APPKEY_ANDROID_VALUE)||StringUtils.equals(appKey, GolfConstant.APPKEY_IOS_VALUE))) {
-            JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "appKey error", null);
-            return false;
-        }
-        
-//        if(!validateSign(inv)){
-//        	JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "参数非法！", null);
-//            return false;
-//        }
+	@Override
+	protected Object before(Invocation inv) throws Exception {
 
-        stopWatchs.set(new Log4JStopWatch());
-        String token = inv.getRequest().getParameter("token");
-        logger.info("token:" + token);
-        PassportTicket passportTicket = passport.readInToken(token);
-        if (passportTicket != null) {
-            logger.info("init the user holder");
-            initUserHolder(inv, passportTicket,token);
-        }
-        return true;
+		String appKey = inv.getRequest().getHeader("appKey");
+		logger.info("appKey:" + inv.getRequest().getHeader("appKey"));
+		Enumeration en = inv.getRequest().getParameterNames();
+		StringBuffer buffer = new StringBuffer();
+		while (en.hasMoreElements()) {
 
-    }
+			String paramName = (String) en.nextElement();
+			buffer.append(paramName + " = "
+					+ inv.getRequest().getParameter(paramName) + ",");
+		}
+		logger.info(buffer.toString());
+		if (!(StringUtils.equals(appKey, GolfConstant.APPKEY_ANDROID_VALUE) || StringUtils
+				.equals(appKey, GolfConstant.APPKEY_IOS_VALUE))) {
+			JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR,
+					"appKey error", null);
+			return false;
+		}
 
-    @Override
-    public void afterCompletion(Invocation inv, Throwable ex) throws Exception {
+		// if(!validateSign(inv)){
+		// JsonUtil.printResult(inv, ResponseStatus.SERVER_ERROR, "参数非法！",
+		// null);
+		// return false;
+		// }
 
-        if (stopWatchs.get() != null) {
-            stopWatchs.get().stop(inv.getRequest().getRequestURI());
-        }
+		stopWatchs.set(new Log4JStopWatch());
+		String token = inv.getRequest().getParameter("token");
+		logger.info("token:" + token);
+		PassportTicket passportTicket = passport.readInToken(token);
+		if (passportTicket != null) {
+			logger.info("init the user holder");
+			initUserHolder(inv, passportTicket, token);
+		}
+		return true;
 
-        stopWatchs.remove();
-        userHolder.clean();
-    }
+	}
 
-    private void initUserHolder(Invocation inv, PassportTicket passportTicket,String token) {
-        User user = userHome.getById(passportTicket.getUserId());
-        if(token.equals(user.getToken())){
-            userHolder.setPassportTicket(passportTicket);
-            userHolder.setUserInfo(user);
-        }        
-    }
-    
-    
-    /**
-     * 做param的sign验证
-     * 将param按字典排序后再md5
-     */
-    public  boolean validateSign(Invocation inv) {
-        String sign = inv.getRequest().getParameter("sign");
-        //@Auto temp
-        if (sign == null || "".equals(sign)) {
-            return false;
-        }
-        StringBuffer stringBuffer = new StringBuffer();
-        List<String> params = new ArrayList<String>();
-        Map<String, String[]> map = inv.getRequest().getParameterMap();
+	@Override
+	public void afterCompletion(Invocation inv, Throwable ex) throws Exception {
 
-        for (Map.Entry<String, String[]> m : map.entrySet()) {
-            String value = "";
-            for (String s : m.getValue()) {
-                value += s;
-            }
-            if(!"sign".equals(m.getKey())) {
-                params.add(m.getKey() + "=" + value);
-            }
-        }
+		if (stopWatchs.get() != null) {
+			stopWatchs.get().stop(inv.getRequest().getRequestURI());
+		}
 
-        Collections.sort(params);
-        for (String param : params) {
-            stringBuffer.append(param);
-        }
-        String secret="golf_jf_security";
-        return sign.equals(getSignature(stringBuffer.toString(), secret));
-    }
-    
-    /**
-     * 生成sign验证串
-     * 因iphone的base64复杂，暂时只是MD5
-     */
-    private static String getSignature(String parameters, String secret) {
-        MessageDigest md = null;
-        try {
-            md = MessageDigest.getInstance("MD5");
+		stopWatchs.remove();
+		userHolder.clean();
+	}
 
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return "";
-        }
+	private void initUserHolder(Invocation inv, PassportTicket passportTicket,
+			String token) {
+		User user = userHome.getById(passportTicket.getUserId());
+		if (token.equals(user.getToken())) {
+			userHolder.setPassportTicket(passportTicket);
+			userHolder.setUserInfo(user);
+		}
+	}
 
-        // 因iphone手机客户端暂时无法base64,现阶段只返回MD5
-        StringBuffer result = new StringBuffer();
-        for (byte b : md.digest((parameters + secret).getBytes())) {
-            result.append(Integer.toHexString((b & 0xf0) >>> 4));
-            result.append(Integer.toHexString(b & 0x0f));
-        }
-//        logger.info("sign="+result.toString());
-        return result.toString();
-    }
-    
-    public int getPriority() {
-        return 300;
-    }
-    
-    public static void main(String[] args){
-    	System.out.println(getSignature("identity=15810738821pwd=123456","golf_jf_security"));
-    	
-//    	try {
-//			System.out.println(URLEncoder.encode("你好", "utf-8"));
-//		} catch (UnsupportedEncodingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//   
-    	
-    }
+	/**
+	 * 做param的sign验证 将param按字典排序后再md5
+	 */
+	public boolean validateSign(Invocation inv) {
+		String sign = inv.getRequest().getParameter("sign");
+		// @Auto temp
+		if (sign == null || "".equals(sign)) {
+			return false;
+		}
+		StringBuffer stringBuffer = new StringBuffer();
+		List<String> params = new ArrayList<String>();
+		Map<String, String[]> map = inv.getRequest().getParameterMap();
+
+		for (Map.Entry<String, String[]> m : map.entrySet()) {
+			String value = "";
+			for (String s : m.getValue()) {
+				value += s;
+			}
+			if (!"sign".equals(m.getKey())) {
+				params.add(m.getKey() + "=" + value);
+			}
+		}
+
+		Collections.sort(params);
+		for (String param : params) {
+			stringBuffer.append(param);
+		}
+		String secret = "golf_jf_security";
+		return sign.equals(getSignature(stringBuffer.toString(), secret));
+	}
+
+	/**
+	 * 生成sign验证串 因iphone的base64复杂，暂时只是MD5
+	 */
+	private static String getSignature(String parameters, String secret) {
+		MessageDigest md = null;
+		try {
+			md = MessageDigest.getInstance("MD5");
+
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return "";
+		}
+
+		// 因iphone手机客户端暂时无法base64,现阶段只返回MD5
+		StringBuffer result = new StringBuffer();
+		for (byte b : md.digest((parameters + secret).getBytes())) {
+			result.append(Integer.toHexString((b & 0xf0) >>> 4));
+			result.append(Integer.toHexString(b & 0x0f));
+		}
+		// logger.info("sign="+result.toString());
+		return result.toString();
+	}
+
+	public int getPriority() {
+		return 300;
+	}
+
+	public static void main(String[] args) {
+		System.out.println(getSignature("identity=15810738821pwd=123456",
+				"golf_jf_security"));
+
+		// try {
+		// System.out.println(URLEncoder.encode("你好", "utf-8"));
+		// } catch (UnsupportedEncodingException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		//
+
+	}
 
 }

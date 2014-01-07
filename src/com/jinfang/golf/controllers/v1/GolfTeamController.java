@@ -127,6 +127,7 @@ public class GolfTeamController {
      * @return
      * @throws Exception
      */
+    @LoginRequired
     @Post("apply")
     public String apply(@Param("teamId") Integer teamId) throws Exception {
 
@@ -160,6 +161,7 @@ public class GolfTeamController {
      * @throws Exception
      */
     @Post("applyList")
+    @LoginRequired
     public String applyList(@Param("teamId") Integer teamId, @Param("offset") Integer offset,
             @Param("limit") Integer limit) throws Exception {
 
@@ -189,6 +191,7 @@ public class GolfTeamController {
      * @return
      * @throws Exception
      */
+    @LoginRequired
     @Post("apply/handle")
     public String applyHandle(@Param("teamId") Integer teamId, @Param("userId") Integer userId,
             @Param("status") Integer status) throws Exception {
@@ -217,6 +220,7 @@ public class GolfTeamController {
      * @return
      * @throws Exception
      */
+    @LoginRequired
     @Post("apply/agreeAll")
     public String agreeAll(@Param("teamId") Integer teamId, @Param("userIds") List<Integer> userIds)
             throws Exception {
@@ -376,6 +380,7 @@ public class GolfTeamController {
      * @throws Exception
      */
     @Post("joinList")
+    @LoginRequired
     public String joinList(@Param("offset") Integer offset, @Param("limit") Integer limit)
             throws Exception {
 
@@ -402,6 +407,54 @@ public class GolfTeamController {
         return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, listType);
 
     }
+    
+    
+    /**
+     * 用户的球队列表
+     * 
+     * @param offset
+     * @param limit
+     * @return
+     * @throws Exception
+     */
+    @Post("userTeamList")
+    @LoginRequired
+    public String userTeamList(@Param("userId") Integer userId,@Param("offset") Integer offset, @Param("limit") Integer limit)
+            throws Exception {
+    	
+    	if(offset==null){
+    		offset=0;
+    	}
+    	
+    	if(limit==null){
+    		limit=0;
+    	}
+
+        offset = offset * limit;
+        
+        if(userId==null){
+        	 User host = userHolder.getUserInfo();
+             if (host != null) {
+                 userId = host.getId();
+             }
+        }
+
+
+        List<GolfTeam> teamList = userTeamHome.getTeamListByUid(userId,offset,limit);
+        if (teamList != null) {
+            for (GolfTeam team : teamList) {
+                team.setLogo(GolfConstant.IMAGE_DOMAIN + team.getLogo());
+            }
+        }
+
+        BaseResponseItem<List<GolfTeam>> result = new BaseResponseItem<List<GolfTeam>>(
+                ResponseStatus.OK, "成功！");
+        Type listType = new TypeToken<BaseResponseItem<List<GolfTeam>>>() {
+        }.getType();
+        result.setData(teamList);
+        return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, listType);
+
+    }
 
     /**
      * 创建球队列表
@@ -412,6 +465,7 @@ public class GolfTeamController {
      * @throws Exception
      */
     @Post("createdList")
+    @LoginRequired
     public String createdList(@Param("offset") Integer offset, @Param("limit") Integer limit)
             throws Exception {
 
@@ -449,6 +503,7 @@ public class GolfTeamController {
      * @throws Exception
      */
     @Post("memberList")
+    @LoginRequired
     public String memberList(@Param("teamId") Integer teamId, @Param("offset") Integer offset,
             @Param("limit") Integer limit) throws Exception {
 
@@ -484,6 +539,7 @@ public class GolfTeamController {
      * @throws Exception
      */
     @Post("invite")
+    @LoginRequired
     public String invite(@Param("userId") Integer userId, @Param("teamId") Integer teamId)
             throws Exception {
 
@@ -523,6 +579,7 @@ public class GolfTeamController {
      * @throws Exception
      */
     @Post("removeMember")
+    @LoginRequired
     public String removeUser(@Param("userId") Integer userId, @Param("teamId") Integer teamId)
             throws Exception {
 

@@ -216,6 +216,12 @@ public class UserRegController {
 				}
 
 				userHome.updateTokenAndSource(userId, token, source);
+				
+				UserCentify centify = userHome.getUserCentify(user.getId());
+				if(centify!=null){
+					user.setRealName(centify.getRealName());
+					user.setSfzId(centify.getSfzId());
+				}
 				BaseResponseItem<User> result = new BaseResponseItem<User>(
 						ResponseStatus.OK, "注册成功！");
 				Type type = new TypeToken<BaseResponseItem<User>>() {

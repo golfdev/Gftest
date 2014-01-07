@@ -33,7 +33,6 @@ import com.jinfang.golf.user.model.User;
 import com.jinfang.golf.utils.UserHolder;
 
 @Path("club")
-@LoginRequired
 public class GolfClubController {
 
 	@Autowired
@@ -87,6 +86,7 @@ public class GolfClubController {
 	 * @throws Exception
 	 */
 	@Post("availableDate")
+	@LoginRequired
 	public String availableDate(@Param("clubId") Integer clubId)
 			throws Exception {
 		
@@ -119,6 +119,7 @@ public class GolfClubController {
 	 * @throws Exception
 	 */
 	@Post("availableTime")
+	@LoginRequired
 	public String availableTime(@Param("clubId") Integer clubId,@Param("selectedDate") String selectedDate)
 			throws Exception {
 		
@@ -150,6 +151,7 @@ public class GolfClubController {
 	 * @throws Exception
 	 */
 	@Post("availableItem")
+	@LoginRequired
 	public String availableItems(@Param("clubId") Integer clubId,@Param("selectedTime") String selectedTime)
 			throws Exception {
 		
@@ -184,6 +186,7 @@ public class GolfClubController {
 	 * @throws Exception
 	 */
 	@Post("book")
+	@LoginRequired
 	public String book(@Param("clubId") Integer clubId,@Param("teeTime") String teeTime,@Param("fairWays") String fairWays
 			,@Param("playerNames") String playerNames,@Param("playerNum") Integer playerNum,@Param("totalPrice") Double totalPrice)
 			throws Exception {
@@ -293,6 +296,7 @@ public class GolfClubController {
 	}
 	
 	@Post("parScoreList")
+	@LoginRequired
 	public String parScoreList(@Param("clubId") Integer clubId)
 			throws Exception {
 		

@@ -23,6 +23,7 @@ import com.jinfang.golf.passport.model.Passport;
 import com.jinfang.golf.relation.home.UserRelationHome;
 import com.jinfang.golf.user.home.UserHome;
 import com.jinfang.golf.user.model.User;
+import com.jinfang.golf.user.model.UserCentify;
 import com.jinfang.golf.utils.FormatCheckUtil;
 
 @Path("user")
@@ -98,6 +99,12 @@ public class UserLoginController {
 				user.setHeadUrl(GolfConstant.IMAGE_DOMAIN +GolfConstant.DEFAULT_HEAD_URL);
 			}
 			userHome.updateTokenAndSource(user.getId(), token, source);
+			
+			UserCentify centify = userHome.getUserCentify(user.getId());
+			if(centify!=null){
+				user.setRealName(centify.getRealName());
+				user.setSfzId(centify.getSfzId());
+			}
 			BaseResponseItem<User> result = new BaseResponseItem<User>(
 					ResponseStatus.OK, "登录成功！");
 			Type type = new TypeToken<BaseResponseItem<User>>() {
