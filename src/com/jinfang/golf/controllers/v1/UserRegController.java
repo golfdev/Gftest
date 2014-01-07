@@ -222,6 +222,8 @@ public class UserRegController {
 					user.setRealName(centify.getRealName());
 					user.setSfzId(centify.getSfzId());
 				}
+				
+				user.setId(userId);
 				BaseResponseItem<User> result = new BaseResponseItem<User>(
 						ResponseStatus.OK, "注册成功！");
 				Type type = new TypeToken<BaseResponseItem<User>>() {
