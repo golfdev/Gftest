@@ -508,7 +508,7 @@ public class GolfTeamController {
 
         }
 
-        BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK, "移除成功！");
+        BaseResponseItem<String> result = new BaseResponseItem<String>(ResponseStatus.OK, "邀请成功！");
         Type type = new TypeToken<BaseResponseItem<String>>() {
         }.getType();
         return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
