@@ -214,6 +214,10 @@ public class UserInfoController {
 		if(offset==null){
 			offset=0;
 		}
+		
+		if(limit==null){
+			limit=10;
+		}
 
 		offset = offset * limit;
 		
