@@ -182,6 +182,35 @@ public class UserRelationController {
 				+ BeanJsonUtils.convertToJsonWithGsonBuilder(result, listType);
 
 	}
+	
+	
+	@Post("chatUserList")
+	public String chatUserList(@Param("offset") Integer offset, @Param("limit") Integer limit) throws Exception {
+
+		offset = offset*limit;
+		List<User> userList = userHome.getAllUserListByCity(offset, limit, "北京");
+
+//		List<User> userList = userHome.getUserListByIds(userIdList);
+		
+		if (userList != null) {
+			for (User temp : userList) {
+				if(StringUtils.isNotBlank(temp.getHeadUrl())){
+					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN + temp.getHeadUrl());
+				}else{
+					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN +GolfConstant.DEFAULT_HEAD_URL);
+				}
+				
+			}
+		}
+		BaseResponseItem<List<User>> result = new BaseResponseItem<List<User>>(
+				ResponseStatus.OK, "成功！");
+		Type listType = new TypeToken<BaseResponseItem<List<User>>>() {
+		}.getType();
+		result.setData(userList);
+		return "@"
+				+ BeanJsonUtils.convertToJsonWithGsonBuilder(result, listType);
+
+	}
 	 
 	 
 
