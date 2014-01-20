@@ -26,6 +26,7 @@ import com.jinfang.golf.club.model.GolfClubYard;
 import com.jinfang.golf.constants.ResponseStatus;
 import com.jinfang.golf.course.home.GolfCourseHome;
 import com.jinfang.golf.course.model.GolfCourse;
+import com.jinfang.golf.course.model.GolfCourseComment;
 import com.jinfang.golf.course.model.GolfCourseHoleScore;
 import com.jinfang.golf.course.model.GolfCoursePlayer;
 import com.jinfang.golf.interceptor.LoginRequired;
@@ -128,6 +129,72 @@ public class GolfCourseController {
 		}.getType();
 		result.setData(yardScoreList);
 		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+	}
+	
+	
+	/**
+	 * 比赛评论
+	 * @param courseId
+	 * @param content
+	 * @param type
+	 * @return
+	 * @throws Exception
+	 */
+	@Post("comment")
+	public String comment(@Param("courseId") Integer courseId,
+			@Param("content") String content,
+			@Param("type") Integer type) throws Exception {
+
+		if (courseId == null || courseId == 0 || StringUtils.isBlank(content)
+				|| type == null) {
+			return "@"
+					+ BeanJsonUtils
+							.convertToJsonWithException(new GolfException(
+									ResponseStatus.SERVER_ERROR, "参数非法！"));
+		}
+
+		GolfCourseComment comment = new GolfCourseComment();
+		comment.setContent(content);
+		comment.setCourseId(courseId);
+		comment.setType(type);
+		Integer commentId = golfCourseHome.saveComment(comment);
+		comment.setId(commentId);
+		BaseResponseItem<GolfCourseComment> result = new BaseResponseItem<GolfCourseComment>(
+				ResponseStatus.OK, "成功！");
+		Type commentType = new TypeToken<BaseResponseItem<GolfCourseComment>>() {
+		}.getType();
+		result.setData(comment);
+		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, commentType);
+	}
+	
+	
+	/**
+	 * 比赛评论列表
+	 * @param courseId
+	 * @param offset
+	 * @param limit
+	 * @return
+	 * @throws Exception
+	 */
+	@Post("commentList")
+	public String commentList(@Param("courseId") Integer courseId,
+			@Param("offset") Integer offset,
+			@Param("limit") Integer limit) throws Exception {
+
+		if (courseId == null || courseId == 0) {
+			return "@"
+					+ BeanJsonUtils
+							.convertToJsonWithException(new GolfException(
+									ResponseStatus.SERVER_ERROR, "参数非法！"));
+		}
+
+		List<GolfCourseComment> commentList = golfCourseHome.getCommentList(courseId, offset, limit);
+		BaseResponseItem<List<GolfCourseComment>> result = new BaseResponseItem<List<GolfCourseComment>>(
+				ResponseStatus.OK, "成功！");
+		Type commentType = new TypeToken<BaseResponseItem<List<GolfCourseComment>>>() {
+		}.getType();
+		result.setData(commentList);
+		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, commentType);
 	}
 	
 	
