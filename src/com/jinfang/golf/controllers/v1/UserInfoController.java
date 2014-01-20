@@ -80,11 +80,12 @@ public class UserInfoController {
 		user.setFollowCount(userRelationHome.getFollowCount(id));
 		user.setFansCount(userRelationHome.getFansCount(id));
 		user.setFriendCount(userRelationHome.getFriendCount(id));
-		
-		if(StringUtils.isNotBlank(user.getHeadUrl())){
+
+		if (StringUtils.isNotBlank(user.getHeadUrl())) {
 			user.setHeadUrl(GolfConstant.IMAGE_DOMAIN + user.getHeadUrl());
-		}else{
-			user.setHeadUrl(GolfConstant.IMAGE_DOMAIN +GolfConstant.DEFAULT_HEAD_URL);
+		} else {
+			user.setHeadUrl(GolfConstant.IMAGE_DOMAIN
+					+ GolfConstant.DEFAULT_HEAD_URL);
 		}
 		if (!host.getId().equals(user.getId())) {
 			user.setToken(null);
@@ -92,13 +93,13 @@ public class UserInfoController {
 			user.setPhone(null);
 		} else {
 			UserCentify centify = userHome.getUserCentify(id);
-			if(centify!=null){
+			if (centify != null) {
 				user.setRealName(centify.getRealName());
 				user.setSfzId(centify.getSfzId());
 			}
 		}
-		
-	    user.setIsFollowed(userRelationHome.isFollow(host.getId(), id));
+
+		user.setIsFollowed(userRelationHome.isFollow(host.getId(), id));
 
 		BaseResponseItem<User> result = new BaseResponseItem<User>(
 				ResponseStatus.OK, "返回用户信息！");
@@ -146,6 +147,8 @@ public class UserInfoController {
 	@Post("edit")
 	public String edit(@Param("userName") String userName,
 			@Param("gender") Integer gender, @Param("city") String city,
+			@Param("playAge") Integer playAge,
+			@Param("handicap") Integer handicap,
 			@Param("description") String description,
 			@Param("realName") String realName, @Param("sfzId") String sfzId)
 			throws Exception {
@@ -169,11 +172,12 @@ public class UserInfoController {
 		}
 
 		userHome.updateUser(user);
-		
-		if(StringUtils.isNotBlank(user.getHeadUrl())){
+
+		if (StringUtils.isNotBlank(user.getHeadUrl())) {
 			user.setHeadUrl(GolfConstant.IMAGE_DOMAIN + user.getHeadUrl());
-		}else{
-			user.setHeadUrl(GolfConstant.IMAGE_DOMAIN +GolfConstant.DEFAULT_HEAD_URL);
+		} else {
+			user.setHeadUrl(GolfConstant.IMAGE_DOMAIN
+					+ GolfConstant.DEFAULT_HEAD_URL);
 		}
 
 		if (StringUtils.isNotBlank(realName) && StringUtils.isNotBlank(sfzId)) {
@@ -204,44 +208,45 @@ public class UserInfoController {
 	 * @throws Exception
 	 */
 	@Post("list")
-	public String list(@Param("type") Integer type,@Param("city") String city,
+	public String list(@Param("type") Integer type, @Param("city") String city,
 			@Param("offset") Integer offset, @Param("limit") Integer limit)
 			throws Exception {
 
 		User user = userHolder.getUserInfo();
 		List<User> userList = null;
-		
-		if(offset==null){
-			offset=0;
+
+		if (offset == null) {
+			offset = 0;
 		}
-		
-		if(limit==null){
-			limit=10;
+
+		if (limit == null) {
+			limit = 10;
 		}
 
 		offset = offset * limit;
-		
-		if(type==null){
-			type=1;
+
+		if (type == null) {
+			type = 1;
 		}
 
 		if (type == 0) {
 			userList = userHome.getAllUserList(offset, limit);
 		} else if (type == 1) {
-			if(StringUtils.isEmpty(city)){
+			if (StringUtils.isEmpty(city)) {
 				city = user.getCity();
 			}
-			
-			if(StringUtils.isEmpty(city)){
+
+			if (StringUtils.isEmpty(city)) {
 				city = "北京";
 			}
-//			if(user.getStatus()!=null&&user.getStatus()==1){
-//				userList = userHome.getAllUserListByCity(offset, limit, city);
-//			}else{
-//				userList = userHome.getAllUserListByCityAndStatus(offset, limit, city,0);
-//			}
-			
-			if(CollectionUtils.isEmpty(userList)){
+			// if(user.getStatus()!=null&&user.getStatus()==1){
+			// userList = userHome.getAllUserListByCity(offset, limit, city);
+			// }else{
+			// userList = userHome.getAllUserListByCityAndStatus(offset, limit,
+			// city,0);
+			// }
+
+			if (CollectionUtils.isEmpty(userList)) {
 				userList = userHome.getAllUserListByCity(offset, limit, city);
 			}
 		} else if (type == 2) {
@@ -255,19 +260,90 @@ public class UserInfoController {
 		if (userList != null) {
 			List<Integer> uidList = new ArrayList<Integer>();
 			for (User temp : userList) {
-				if(StringUtils.isNotBlank(temp.getHeadUrl())){
-					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN + temp.getHeadUrl());
-				}else{
-					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN +GolfConstant.DEFAULT_HEAD_URL);
+				if (StringUtils.isNotBlank(temp.getHeadUrl())) {
+					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN
+							+ temp.getHeadUrl());
+				} else {
+					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN
+							+ GolfConstant.DEFAULT_HEAD_URL);
 				}
 				uidList.add(temp.getId());
 			}
-			Map<Integer, Integer> isFollowMap = userRelationHome.isFollowBatch(user.getId(), uidList);
-			
+			Map<Integer, Integer> isFollowMap = userRelationHome.isFollowBatch(
+					user.getId(), uidList);
+
 			for (User temp : userList) {
 				temp.setIsFollowed(isFollowMap.get(temp.getId()));
 			}
-			
+
+		}
+
+		BaseResponseItem<List<User>> result = new BaseResponseItem<List<User>>(
+				ResponseStatus.OK, "成功！");
+		Type listType = new TypeToken<BaseResponseItem<List<User>>>() {
+		}.getType();
+		result.setData(userList);
+		return "@"
+				+ BeanJsonUtils.convertToJsonWithGsonBuilder(result, listType);
+
+	}
+
+	/**
+	 * 邀请的列表
+	 * @param city
+	 * @param offset
+	 * @param limit
+	 * @return
+	 * @throws Exception
+	 */
+	@Post("inviteList")
+	public String inviteList(@Param("city") String city,
+			@Param("offset") Integer offset, @Param("limit") Integer limit)
+			throws Exception {
+
+		User user = userHolder.getUserInfo();
+		List<User> userList = null;
+
+		if (offset == null) {
+			offset = 0;
+		}
+
+		if (limit == null) {
+			limit = 10;
+		}
+
+		offset = offset * limit;
+
+		if (StringUtils.isEmpty(city)) {
+			city = user.getCity();
+		}
+
+		if (StringUtils.isEmpty(city)) {
+			city = "北京";
+		}
+
+		userList = userHome.getAllUserListByCity(offset, limit, city);
+
+		if (userList != null) {
+
+			List<Integer> uidList = new ArrayList<Integer>();
+			for (User temp : userList) {
+				if (StringUtils.isNotBlank(temp.getHeadUrl())) {
+					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN
+							+ temp.getHeadUrl());
+				} else {
+					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN
+							+ GolfConstant.DEFAULT_HEAD_URL);
+				}
+				uidList.add(temp.getId());
+			}
+			Map<Integer, Integer> isFollowMap = userRelationHome.isFollowBatch(
+					user.getId(), uidList);
+
+			for (User temp : userList) {
+				temp.setIsFollowed(isFollowMap.get(temp.getId()));
+			}
+
 		}
 
 		BaseResponseItem<List<User>> result = new BaseResponseItem<List<User>>(

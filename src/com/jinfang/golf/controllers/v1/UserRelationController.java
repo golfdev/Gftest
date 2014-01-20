@@ -1,6 +1,7 @@
 package com.jinfang.golf.controllers.v1;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.paoding.rose.web.Invocation;
@@ -191,7 +192,8 @@ public class UserRelationController {
 		List<User> userList = userHome.getAllUserListByCity(offset, limit, "北京");
 
 //		List<User> userList = userHome.getUserListByIds(userIdList);
-		
+		User host = userHolder.getUserInfo();
+		List<User> resultList = new ArrayList<User>();
 		if (userList != null) {
 			for (User temp : userList) {
 				if(StringUtils.isNotBlank(temp.getHeadUrl())){
@@ -200,13 +202,17 @@ public class UserRelationController {
 					temp.setHeadUrl(GolfConstant.IMAGE_DOMAIN +GolfConstant.DEFAULT_HEAD_URL);
 				}
 				
+				if(!temp.getId().equals(host.getId())){
+					resultList.add(temp);
+				}
+				
 			}
 		}
 		BaseResponseItem<List<User>> result = new BaseResponseItem<List<User>>(
 				ResponseStatus.OK, "成功！");
 		Type listType = new TypeToken<BaseResponseItem<List<User>>>() {
 		}.getType();
-		result.setData(userList);
+		result.setData(resultList);
 		return "@"
 				+ BeanJsonUtils.convertToJsonWithGsonBuilder(result, listType);
 

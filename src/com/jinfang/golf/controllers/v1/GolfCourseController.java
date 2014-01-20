@@ -729,6 +729,14 @@ public class GolfCourseController {
 		result.put("after9TotalScoreList", after9TotalList);
 //		result.put("after9PutterScoreList", after9PutterList);
 		result.put("totalScoreList", totalList);
+		
+		result.put("totalScoreList", totalList);
+		
+		List<GolfCourseComment> commentList = golfCourseHome.getCommentList(id, 0, 20);
+
+		result.put("commentList", commentList);
+
+		
 //		result.put("totalPutterScoreList", totalPutterList);
 
 	    JsonUtil.printResult(inv, ResponseStatus.OK, "success！", result);
