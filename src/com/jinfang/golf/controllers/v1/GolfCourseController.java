@@ -107,8 +107,9 @@ public class GolfCourseController {
 		}
 		course.setPlayerList(coursePlayerList);
 		course.setCreatorId(userHolder.getUserInfo().getId());
-		golfCourseHome.saveCourse(course);
-		
+		Integer courseId = golfCourseHome.saveCourse(course);
+	    Map<String,Object> result = new HashMap<String,Object>();
+	    result.put("courseId", courseId);
 		List<GolfClubYard> yardList = golfClubHome.getGolfClubYardList(course.getClubId());
 		
 		if(CollectionUtils.isEmpty(yardList)){
@@ -123,12 +124,11 @@ public class GolfCourseController {
 		for(GolfClubYard yard:yardList){
 			yardScoreList.add(yard.getParScore());
 		}
-		BaseResponseItem<List<Integer>> result = new BaseResponseItem<List<Integer>>(
-				ResponseStatus.OK, "成功！");
-		Type type = new TypeToken<BaseResponseItem<List<Integer>>>() {
-		}.getType();
-		result.setData(yardScoreList);
-		return "@" + BeanJsonUtils.convertToJsonWithGsonBuilder(result, type);
+	    result.put("yardScoreList", yardScoreList);
+
+	    JsonUtil.printResult(inv, ResponseStatus.OK, "success！", result);
+
+        return "";
 	}
 	
 	
