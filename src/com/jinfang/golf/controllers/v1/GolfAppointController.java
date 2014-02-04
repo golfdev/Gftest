@@ -133,7 +133,14 @@ public class GolfAppointController {
 		GolfAppointmentMember member = new GolfAppointmentMember();
 		member.setAppointId(appointId);
 		member.setUserId(user.getId());
-		golfAppointmentHome.addParter(member);
+		boolean success = golfAppointmentHome.addParter(member);
+		if(!success){
+			BaseResponseItem<String> result = new BaseResponseItem<String>(
+					ResponseStatus.SERVER_ERROR, "约球人数已满！");
+			Type type = new TypeToken<BaseResponseItem<String>>() {
+			}.getType();
+			return "@" + BeanJsonUtils.convertToJson(result, type);
+		}
 
 		BaseResponseItem<String> result = new BaseResponseItem<String>(
 				ResponseStatus.OK, "申请成功！");

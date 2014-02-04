@@ -31,6 +31,7 @@ import com.jinfang.golf.course.model.GolfCourseHoleScore;
 import com.jinfang.golf.course.model.GolfCoursePlayer;
 import com.jinfang.golf.interceptor.LoginRequired;
 import com.jinfang.golf.user.home.UserHome;
+import com.jinfang.golf.user.model.User;
 import com.jinfang.golf.utils.UserHolder;
 
 @Path("course")
@@ -152,11 +153,12 @@ public class GolfCourseController {
 							.convertToJsonWithException(new GolfException(
 									ResponseStatus.SERVER_ERROR, "参数非法！"));
 		}
-
+		Integer userId = userHolder.getUserInfo().getId();
 		GolfCourseComment comment = new GolfCourseComment();
 		comment.setContent(content);
 		comment.setCourseId(courseId);
 		comment.setType(type);
+		comment.setUserId(userId);
 		Integer commentId = golfCourseHome.saveComment(comment);
 		comment.setId(commentId);
 		BaseResponseItem<GolfCourseComment> result = new BaseResponseItem<GolfCourseComment>(
