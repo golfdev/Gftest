@@ -82,7 +82,13 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
 		PassportTicket passportTicket = passport.readInToken(token);
 		if (passportTicket != null) {
 			logger.info("init the user holder");
-			initUserHolder(inv, passportTicket, token);
+			boolean flag = initUserHolder(inv, passportTicket, token);
+			
+			if(!flag){
+				JsonUtil.printResult(inv, ResponseStatus.NEED_LOGIN,
+						"该账号已在其他设备上登录,请重新登录！", null);
+				return false;
+			}
 		}
 		return true;
 
@@ -99,12 +105,15 @@ public class BaseInterceptor extends ControllerInterceptorAdapter {
 		userHolder.clean();
 	}
 
-	private void initUserHolder(Invocation inv, PassportTicket passportTicket,
+	private boolean initUserHolder(Invocation inv, PassportTicket passportTicket,
 			String token) {
 		User user = userHome.getById(passportTicket.getUserId());
 		if (token.equals(user.getToken())) {
 			userHolder.setPassportTicket(passportTicket);
 			userHolder.setUserInfo(user);
+			return true;
+		}else{
+			return false;
 		}
 	}
 

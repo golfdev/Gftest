@@ -42,7 +42,7 @@ public class LoginRequiredInterceptor extends ControllerInterceptorAdapter {
 
 		if (userHolder == null || userHolder.getPassportTicket() == null|| userHolder.getUserInfo() == null) {
 			JsonUtil.printResult(inv, ResponseStatus.NOT_LOGIN,
-					"not login", null);
+					"需要登录！", null);
 
 			return false;
 		}

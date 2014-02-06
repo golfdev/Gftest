@@ -356,12 +356,6 @@ public class GolfTeamController {
 
         List<GolfTeam> teamList = userTeamHome.getGolfTeamList(userId, city, offset, limit);
 
-        if (teamList != null) {
-            for (GolfTeam team : teamList) {
-                team.setLogo(GolfConstant.IMAGE_DOMAIN + team.getLogo());
-            }
-        }
-
         BaseResponseItem<List<GolfTeam>> result = new BaseResponseItem<List<GolfTeam>>(
                 ResponseStatus.OK, "成功！");
         Type listType = new TypeToken<BaseResponseItem<List<GolfTeam>>>() {

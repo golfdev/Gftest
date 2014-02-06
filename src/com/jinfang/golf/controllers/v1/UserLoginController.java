@@ -119,6 +119,24 @@ public class UserLoginController {
 		}
 
 	}
+	
+	
+	@Post("checkToken")
+	public String checkToken(@Param("token") String token) throws Exception {
+
+		if (StringUtils.isBlank(token)) {
+			return "@"
+					+ BeanJsonUtils
+							.convertToJsonWithException(new GolfException(
+									ResponseStatus.SERVER_ERROR, "token不能为空！"));
+		}
+
+		return "@"
+		+ BeanJsonUtils
+				.convertToJsonWithException(new GolfException(
+						ResponseStatus.OK, "success！"));
+
+	}
 
 	public static void main(String[] args) {
 		BaseResponseItem<User> result = new BaseResponseItem<User>(
