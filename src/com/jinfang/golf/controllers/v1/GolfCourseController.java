@@ -234,13 +234,14 @@ public class GolfCourseController {
 			@Param("playerNames") String playerNames,
 			@Param("parScore") Integer parScore,
 			@Param("totalScores") String totalScores,
-			@Param("putterScores") String putterScores) throws Exception {
+			@Param("putterScores") String putterScores,@Param("pointScores") String points) throws Exception {
 
 		if (courseId == null || holeNum == null
 				|| StringUtils.isBlank(playerIds)
 				|| StringUtils.isBlank(playerNames)
 				|| StringUtils.isBlank(totalScores)
-				|| StringUtils.isBlank(putterScores)) {
+				|| StringUtils.isBlank(putterScores)
+				|| StringUtils.isBlank(points)) {
 			return "@"
 					+ BeanJsonUtils
 							.convertToJsonWithException(new GolfException(
@@ -251,10 +252,12 @@ public class GolfCourseController {
 		String[] nameArray = playerNames.split("_");
 		String[] totalArray = totalScores.split("_");
 		String[] putterArray = putterScores.split("_");
+		String[] pointArray = points.split("_");
 
 		if (playerArray.length != nameArray.length
 				|| playerArray.length != totalArray.length
-				|| playerArray.length != putterArray.length) {
+				|| playerArray.length != putterArray.length
+				|| playerArray.length != pointArray.length) {
 			return "@"
 					+ BeanJsonUtils
 							.convertToJsonWithException(new GolfException(
@@ -276,6 +279,8 @@ public class GolfCourseController {
 			holeScore.setPutterScore(putterScore);
 			holeScore.setSerialNum(i + 1);
 			holeScore.setSubScore(totalScore - parScore);
+			Integer pointScore = NumberUtils.toInt(pointArray[i], 0);
+			holeScore.setPoint(pointScore);
 			golfCourseHome.saveHoleScore(holeScore);
 
 		}
@@ -372,10 +377,13 @@ public class GolfCourseController {
 		List<GolfCourseHoleScore> holeScoreList = golfCourseHome.getHoleScoreList(id);
 		Map<Integer,List<Integer>> holeTotalScoreMap = new HashMap<Integer,List<Integer>>();
 		Map<Integer,List<Integer>> holePutterScoreMap = new HashMap<Integer,List<Integer>>();
+		Map<Integer,List<Integer>> holePointScoreMap = new HashMap<Integer,List<Integer>>();
+
 
 		for(GolfCourseHoleScore holeScore:holeScoreList){
 			List<Integer> holeTotalScore = null;
 			List<Integer> holePutterScore = null;
+			List<Integer> pointScore = null;
 			if(holeTotalScoreMap.containsKey(holeScore.getHoleNum())){
 				holeTotalScore = holeTotalScoreMap.get(holeScore.getHoleNum());
 				holeTotalScore.add(holeScore.getTotalScore());
@@ -395,17 +403,33 @@ public class GolfCourseController {
 				holePutterScore.add(holeScore.getPutterScore());
 				holePutterScoreMap.put(holeScore.getHoleNum(), holePutterScore);
 			}
+			
+			if(holePointScoreMap.containsKey(holeScore.getHoleNum())){
+				pointScore = holePointScoreMap.get(holeScore.getHoleNum());
+				pointScore.add(holeScore.getPutterScore());
+				holePointScoreMap.put(holeScore.getHoleNum(), pointScore);
+			}else{
+				pointScore = new ArrayList<Integer>();
+				pointScore.add(holeScore.getPutterScore());
+				holePointScoreMap.put(holeScore.getHoleNum(), pointScore);
+			}
 		}
 		
 	
 		
 		List<Integer> totList = new ArrayList<Integer>();
 		List<Integer> before9TotalList = new ArrayList<Integer>();
+
 		List<Integer> after9TotalList = new ArrayList<Integer>();
 		List<Integer> before9PutterList = new ArrayList<Integer>();
+		List<Integer> before9PointList = new ArrayList<Integer>();
+
 		List<Integer> after9PutterList = new ArrayList<Integer>();
+		List<Integer> after9PointList = new ArrayList<Integer>();
+
 		List<Integer> totalList = new ArrayList<Integer>();
 		List<Integer> totalPutterList = new ArrayList<Integer>();
+		List<Integer> totalPointList = new ArrayList<Integer>();
 
 
 
@@ -414,10 +438,15 @@ public class GolfCourseController {
 			Map<Integer,Integer> totScoreMap = new HashMap<Integer,Integer>();
 			Map<Integer,Integer> before9TotalScoreMap = new HashMap<Integer,Integer>();
 			Map<Integer,Integer> before9PutterScoreMap = new HashMap<Integer,Integer>();
+			Map<Integer,Integer> before9PointScoreMap = new HashMap<Integer,Integer>();
+
 			Map<Integer,Integer> after9TotalScoreMap = new HashMap<Integer,Integer>();
 			Map<Integer,Integer> after9PutterScoreMap = new HashMap<Integer,Integer>();
+			Map<Integer,Integer> after9PointScoreMap = new HashMap<Integer,Integer>();
+
 			Map<Integer,Integer> totalScoreMap = new HashMap<Integer,Integer>();
 			Map<Integer,Integer> totalPutterScoreMap = new HashMap<Integer,Integer>();
+			Map<Integer,Integer> totalPointScoreMap = new HashMap<Integer,Integer>();
 
 			for(GolfCourseHoleScore score:holeScoreList){
 				if(totScoreMap.containsKey(score.getPlayerId())){
@@ -443,6 +472,14 @@ public class GolfCourseController {
 					}else{
 						before9PutterScoreMap.put(score.getPlayerId(), score.getPutterScore());
 					}
+					
+					if(before9PointScoreMap.containsKey(score.getPlayerId())){
+						Integer total = before9PointScoreMap.get(score.getPlayerId());
+						Integer sum = score.getPoint()+total;
+						before9PointScoreMap.put(score.getPlayerId(), sum);
+					}else{
+						before9PointScoreMap.put(score.getPlayerId(), score.getPoint());
+					}
 				}else{
 					if(after9TotalScoreMap.containsKey(score.getPlayerId())){
 						Integer total = after9TotalScoreMap.get(score.getPlayerId());
@@ -458,6 +495,15 @@ public class GolfCourseController {
 						after9PutterScoreMap.put(score.getPlayerId(), sum);
 					}else{
 						after9PutterScoreMap.put(score.getPlayerId(), score.getPutterScore());
+					}
+					
+					
+					if(after9PointScoreMap.containsKey(score.getPlayerId())){
+						Integer total = after9PointScoreMap.get(score.getPlayerId());
+						Integer sum = score.getPoint()+total;
+						after9PointScoreMap.put(score.getPlayerId(), sum);
+					}else{
+						after9PointScoreMap.put(score.getPlayerId(), score.getPoint());
 					}
 				}
 				
@@ -479,6 +525,14 @@ public class GolfCourseController {
 					totalPutterScoreMap.put(score.getPlayerId(), score.getPutterScore());
 				}
 				
+				if(totalPointScoreMap.containsKey(score.getPlayerId())){
+					Integer total = totalPointScoreMap.get(score.getPlayerId());
+					Integer sum = score.getPoint()+total;
+					totalPointScoreMap.put(score.getPlayerId(), sum);
+				}else{
+					totalPointScoreMap.put(score.getPlayerId(), score.getPoint());
+				}
+				
 			}
 			
 			List<GolfCoursePlayer> playerList = course.getPlayerList();
@@ -494,6 +548,10 @@ public class GolfCourseController {
 					before9PutterList.add(before9PutterScoreMap.get(player.getPlayerId()));
 				}
 				
+				if(before9PointScoreMap.containsKey(player.getPlayerId())){
+					before9PointList.add(before9PointScoreMap.get(player.getPlayerId()));
+				}
+				
 				if(after9TotalScoreMap.containsKey(player.getPlayerId())){
 					after9TotalList.add(after9TotalScoreMap.get(player.getPlayerId()));
 				}
@@ -502,12 +560,20 @@ public class GolfCourseController {
 					after9PutterList.add(after9PutterScoreMap.get(player.getPlayerId()));
 				}
 				
+				if(after9PointScoreMap.containsKey(player.getPlayerId())){
+					after9PointList.add(after9PointScoreMap.get(player.getPlayerId()));
+				}
+				
 				if(totalScoreMap.containsKey(player.getPlayerId())){
 					totalList.add(totalScoreMap.get(player.getPlayerId()));
 				}
 				
 				if(totalPutterScoreMap.containsKey(player.getPlayerId())){
 					totalPutterList.add(totalPutterScoreMap.get(player.getPlayerId()));
+				}
+				
+				if(totalPointScoreMap.containsKey(player.getPlayerId())){
+					totalPointList.add(totalPointScoreMap.get(player.getPlayerId()));
 				}
 			}
 			
@@ -518,15 +584,23 @@ public class GolfCourseController {
 //		result.put("holeScoreList", holeScoreList);
 		result.put("holeTotalScoreDetail", holeTotalScoreMap);
 		result.put("holePutterScoreDetail", holePutterScoreMap);
+		
+		result.put("holePointScoreDetail", holePointScoreMap);
+
 
 
 		result.put("totList", totList);
 		result.put("before9TotalScoreList", before9TotalList);
 		result.put("before9PutterScoreList", before9PutterList);
+		result.put("before9PointScoreList", before9PointList);
+
 		result.put("after9TotalScoreList", after9TotalList);
 		result.put("after9PutterScoreList", after9PutterList);
+		result.put("after9PointScoreList", after9PointList);
+
 		result.put("totalScoreList", totalList);
 		result.put("totalPutterScoreList", totalPutterList);
+		result.put("totalPointScoreList", totalPointList);
 
 	    JsonUtil.printResult(inv, ResponseStatus.OK, "success！", result);
 
@@ -578,9 +652,12 @@ public class GolfCourseController {
 		List<GolfCourseHoleScore> holeScoreList = golfCourseHome.getHoleScoreList(id);
 		Map<Integer,List<Integer>> holeTotalScoreMap = new HashMap<Integer,List<Integer>>();
 //		Map<Integer,List<Integer>> holePutterScoreMap = new HashMap<Integer,List<Integer>>();
+		Map<Integer,List<Integer>> holePointScoreMap = new HashMap<Integer,List<Integer>>();
 
 		for(GolfCourseHoleScore holeScore:holeScoreList){
 			List<Integer> holeTotalScore = null;
+			List<Integer> pointScore = null;
+
 			if(holeTotalScoreMap.containsKey(holeScore.getHoleNum())){
 				holeTotalScore = holeTotalScoreMap.get(holeScore.getHoleNum());
 				holeTotalScore.add(holeScore.getTotalScore());
@@ -589,6 +666,16 @@ public class GolfCourseController {
 				holeTotalScore = new ArrayList<Integer>();
 				holeTotalScore.add(holeScore.getTotalScore());
 				holeTotalScoreMap.put(holeScore.getHoleNum(), holeTotalScore);
+			}
+			
+			if(holePointScoreMap.containsKey(holeScore.getHoleNum())){
+				pointScore = holePointScoreMap.get(holeScore.getHoleNum());
+				pointScore.add(holeScore.getPutterScore());
+				holePointScoreMap.put(holeScore.getHoleNum(), pointScore);
+			}else{
+				pointScore = new ArrayList<Integer>();
+				pointScore.add(holeScore.getPutterScore());
+				holePointScoreMap.put(holeScore.getHoleNum(), pointScore);
 			}
 			
 //			if(holePutterScoreMap.containsKey(holeScore.getHoleNum())){
@@ -606,10 +693,16 @@ public class GolfCourseController {
 		
 		List<Integer> totList = new ArrayList<Integer>();
 		List<Integer> before9TotalList = new ArrayList<Integer>();
+		List<Integer> before9PointList = new ArrayList<Integer>();
+
 		List<Integer> after9TotalList = new ArrayList<Integer>();
+		List<Integer> after9PointList = new ArrayList<Integer>();
+
 //		List<Integer> before9PutterList = new ArrayList<Integer>();
 //		List<Integer> after9PutterList = new ArrayList<Integer>();
 		List<Integer> totalList = new ArrayList<Integer>();
+		List<Integer> totalPointList = new ArrayList<Integer>();
+
 //		List<Integer> totalPutterList = new ArrayList<Integer>();
 
 
@@ -618,10 +711,16 @@ public class GolfCourseController {
 		if(holeScoreList!=null){
 			Map<Integer,Integer> totScoreMap = new HashMap<Integer,Integer>();
 			Map<Integer,Integer> before9TotalScoreMap = new HashMap<Integer,Integer>();
+			Map<Integer,Integer> before9PointScoreMap = new HashMap<Integer,Integer>();
+
 //			Map<Integer,Integer> before9PutterScoreMap = new HashMap<Integer,Integer>();
 			Map<Integer,Integer> after9TotalScoreMap = new HashMap<Integer,Integer>();
+			Map<Integer,Integer> after9PointScoreMap = new HashMap<Integer,Integer>();
+
 //			Map<Integer,Integer> after9PutterScoreMap = new HashMap<Integer,Integer>();
 			Map<Integer,Integer> totalScoreMap = new HashMap<Integer,Integer>();
+			Map<Integer,Integer> totalPointScoreMap = new HashMap<Integer,Integer>();
+
 //			Map<Integer,Integer> totalPutterScoreMap = new HashMap<Integer,Integer>();
 
 			for(GolfCourseHoleScore score:holeScoreList){
@@ -641,6 +740,14 @@ public class GolfCourseController {
 						before9TotalScoreMap.put(score.getPlayerId(), score.getTotalScore());
 					}
 					
+					if(before9PointScoreMap.containsKey(score.getPlayerId())){
+						Integer total = before9PointScoreMap.get(score.getPlayerId());
+						Integer sum = score.getPoint()+total;
+						before9PointScoreMap.put(score.getPlayerId(), sum);
+					}else{
+						before9PointScoreMap.put(score.getPlayerId(), score.getPoint());
+					}
+					
 //					if(before9PutterScoreMap.containsKey(score.getPlayerId())){
 //						Integer total = before9PutterScoreMap.get(score.getPlayerId());
 //						Integer sum = score.getPutterScore()+total;
@@ -655,6 +762,14 @@ public class GolfCourseController {
 						after9TotalScoreMap.put(score.getPlayerId(), sum);
 					}else{
 						after9TotalScoreMap.put(score.getPlayerId(), score.getTotalScore());
+					}
+					
+					if(after9PointScoreMap.containsKey(score.getPlayerId())){
+						Integer total = after9PointScoreMap.get(score.getPlayerId());
+						Integer sum = score.getPoint()+total;
+						after9PointScoreMap.put(score.getPlayerId(), sum);
+					}else{
+						after9PointScoreMap.put(score.getPlayerId(), score.getPoint());
 					}
 					
 //					if(after9PutterScoreMap.containsKey(score.getPlayerId())){
@@ -674,6 +789,14 @@ public class GolfCourseController {
 					totalScoreMap.put(score.getPlayerId(), sum);
 				}else{
 					totalScoreMap.put(score.getPlayerId(), score.getTotalScore());
+				}
+				
+				if(totalPointScoreMap.containsKey(score.getPlayerId())){
+					Integer total = totalPointScoreMap.get(score.getPlayerId());
+					Integer sum = score.getPoint()+total;
+					totalPointScoreMap.put(score.getPlayerId(), sum);
+				}else{
+					totalPointScoreMap.put(score.getPlayerId(), score.getPoint());
 				}
 				
 //				if(totalPutterScoreMap.containsKey(score.getPlayerId())){
@@ -699,8 +822,16 @@ public class GolfCourseController {
 //					before9PutterList.add(before9PutterScoreMap.get(player.getPlayerId()));
 //				}
 				
+				if(before9PointScoreMap.containsKey(player.getPlayerId())){
+					before9PointList.add(before9PointScoreMap.get(player.getPlayerId()));
+				}
+				
 				if(after9TotalScoreMap.containsKey(player.getPlayerId())){
 					after9TotalList.add(after9TotalScoreMap.get(player.getPlayerId()));
+				}
+				
+				if(after9PointScoreMap.containsKey(player.getPlayerId())){
+					after9PointList.add(after9PointScoreMap.get(player.getPlayerId()));
 				}
 				
 //				if(after9PutterScoreMap.containsKey(player.getPlayerId())){
@@ -709,6 +840,10 @@ public class GolfCourseController {
 				
 				if(totalScoreMap.containsKey(player.getPlayerId())){
 					totalList.add(totalScoreMap.get(player.getPlayerId()));
+				}
+				
+				if(totalPointScoreMap.containsKey(player.getPlayerId())){
+					totalPointList.add(totalPointScoreMap.get(player.getPlayerId()));
 				}
 				
 //				if(totalPutterScoreMap.containsKey(player.getPlayerId())){
@@ -722,6 +857,15 @@ public class GolfCourseController {
 		result.put("playerList", course.getPlayerList());
 //		result.put("holeScoreList", holeScoreList);
 		result.put("holeTotalScoreDetail", holeTotalScoreMap);
+		result.put("holePointScoreDetail", holePointScoreMap);
+		
+		
+		result.put("before9PointScoreList", before9PointList);
+
+		result.put("after9PointScoreList", after9PointList);
+
+		result.put("totalPointScoreList", totalPointList);
+
 //		result.put("holePutterScoreDetail", holePutterScoreMap);
 
 
